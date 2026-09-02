@@ -185,7 +185,6 @@ h1,
 }
 
 /* RESPONSIVE */
-
 @media (max-width: 600px) {
   .hero-grid {
     grid-template-columns: 1fr;
@@ -203,3 +202,5 @@ h1,
     justify-content: flex-start;
   }
 }
+
+/* My Project css */
