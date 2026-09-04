@@ -39,17 +39,81 @@ h1,
   padding: 0 1.5rem;
 }
 
-/** HEADER */
-.site-header {
-  background-color: var(--black);
-  border-bottom: 1px solid var(--red);
+html {
+  scroll-behavior: smooth;
 }
 
-.site-header .container {
+/** HEADER */
+.site-header {
+  position: fixed;
+  top: 1rem;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.nav-sticky {
+  pointer-events: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.25rem 1.5rem;
+  gap: 2rem;
+  width: fit-content;
+  width: 90%;
+  padding: 0.85rem 4.5rem;
+  background-color: var(--black);
+  border: 1px solid var(--pink-red);
+  border-radius: 999px;
+  transition:
+    padding 0.3s ease,
+    box-shadow 0.3s ease,
+    background-color 0.3s ease;
+}
+
+.site-header.scrolled .nav-sticky {
+  padding: 0.5rem 1.75rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  background-color: var(--carbon-black);
+  backdrop-filter: blur(8px);
+}
+
+.nav-sticky nav {
+  font-family: "Audiowide", sans-serif;
+  display: flex;
+  justify-items: start;
+  gap: 2rem;
+}
+
+.nav-sticky nav a {
+  position: relative;
+  color: var(--white);
+  text-decoration: none;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  padding-bottom: 2px;
+  transition: color 0.3s ease;
+}
+
+.nav-sticky nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 1.5px;
+  background-color: var(--pink-red);
+  transition: width 0.3s ease;
+}
+
+.nav-sticky nav a:hover {
+  color: var(--pink-red);
+}
+
+.nav-sticky nav a:hover::after {
+  width: 100%;
 }
 
 .brand {
@@ -57,26 +121,16 @@ h1,
   font-weight: 700;
   color: var(--white);
   text-decoration: none;
+  white-space: nowrap;
 }
 
-.site-header nav {
-  display: flex;
-  gap: 2rem;
-}
-
-.site-header nav a {
-  color: var(--white);
-  text-decoration: none;
-  font-size: 0.95rem;
-}
-
-.site-header nav a:hover {
-  color: var(--pink-red);
+.hero {
+  padding: 4.5rem 0 5rem;
 }
 
 /** HERO */
-.hero {
-  padding: 4.5rem 0 5rem;
+#profile {
+  padding-top: 8rem; /* override khusus buat section ini, biar ada jarak lebih dari navbar sticky */
 }
 
 .hero-grid {
@@ -353,5 +407,13 @@ h1,
 
   .project-info h3 {
     font-size: 18px;
+  }
+
+  #profile {
+    padding: 7.5rem 0 5rem;
+  }
+
+  .nav-sticky {
+    padding: 0.85rem 2rem;
   }
 }
