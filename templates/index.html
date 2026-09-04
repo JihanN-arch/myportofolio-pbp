@@ -7,15 +7,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Audiowide&family=Limelight&family=Permanent+Marker&family=Protest+Revolution&family=Rubik+Glitch&family=Space+Grotesk:wght@500;700&display=swap"
       rel="stylesheet"
     />
+
     <link rel="stylesheet" href="/static/css/style.css" />
   </head>
   <body>
     <header class="site-header">
       <div class="container">
-        <a href="#profile" class="brand">Jihan</a>
+        <a href="#profile" class="brand">JIHAN</a>
         <nav>
           <a href="#profile">Profile</a>
         </nav>
@@ -26,10 +27,8 @@
       <section class="hero" id="profile">
         <div class="container hero-grid">
           <div class="hero-identity">
-            <p class="hero-kicker">
-              Computer Science &middot; Universitas Indonesia
-            </p>
-            <h1>Jihan Nabiilah Permata Sukma</h1>
+            <p class="hero-kicker">Hey, my name is....</p>
+            <h1>JIHAN NABIILAH PERMATA SUKMA</h1>
           </div>
           <div class="hero-photo">
             <div class="photo-block"></div>
@@ -40,7 +39,10 @@
             />
           </div>
           <div class="hero-details">
-            <p class="bio">Apa ya blm tahu mau isi apa lmao</p>
+            <p class="bio">
+              RESISTENT.
+              <span style="color: #78bc61">CREATIFITY.</span> NOLIFE.
+            </p>
             <dl class="meta-list">
               <div class="meta-row">
                 <dt>NPM</dt>
@@ -53,18 +55,40 @@
             </dl>
             <div class="social-links">
               <a href="https://github.com/JihanN-arch" class="social-link"
-                >GitHub</a
+                ><i data-lucide="github"></i>GitHub</a
               >
               <a
                 href="https://www.linkedin.com/in/jihan-nabiilah-permata-sukma-593305378/"
                 class="social-link"
-                >LinkedIn</a
+                ><i data-lucide="l"></i>LinkedIn</a
               >
               <a href="mailto:jnpermata07@gmail.com" class="social-link"
-                >Email</a
+                ><i data-lucide="mail"></i>Email</a
               >
             </div>
           </div>
+        </div>
+      </section>
+
+      <!-- MY PROJECT PAGE -->
+      <section class="hero" id="my-project">
+        <h1 class="title-page">My Project</h1>
+
+        <div class="project-container">
+          {% for project in projects %}
+          <div class="project-card">
+            <div class="project-img">
+              <img src="{{project.img}}" alt="{{project.title}}" />
+            </div>
+
+            <div class="project-info">
+              <a href="{{project.link}}" target="_blank" rel="noopener">
+                <h3>{{project.title}}</h3>
+                <i data-lucide="arrow-up-right"></i>
+              </a>
+            </div>
+          </div>
+          {% endfor %}
         </div>
       </section>
     </main>
@@ -74,5 +98,12 @@
         <p>&copy; 2026 Jihan. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
       </div>
     </footer>
+
+    <!-- Buat icon -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+      lucide.createIcons();
+    </script>
   </body>
 </html>
