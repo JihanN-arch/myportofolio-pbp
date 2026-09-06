@@ -10,7 +10,10 @@
       href="https://fonts.googleapis.com/css2?family=Audiowide&family=Limelight&family=Permanent+Marker&family=Protest+Revolution&family=Rubik+Glitch&family=Space+Grotesk:wght@500;700&display=swap"
       rel="stylesheet"
     />
-
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css"
+    />
     <link rel="stylesheet" href="/static/css/style.css" />
   </head>
   <body>
@@ -25,6 +28,7 @@
     </header>
 
     <main>
+      <!-- Page -->
       <section class="hero" id="profile">
         <div class="container hero-grid">
           <div class="hero-identity">
@@ -56,12 +60,12 @@
             </dl>
             <div class="social-links">
               <a href="https://github.com/JihanN-arch" class="social-link"
-                ><i data-lucide="github"></i>GitHub</a
+                ><i class="devicon-github-plain"></i>GitHub</a
               >
               <a
                 href="https://www.linkedin.com/in/jihan-nabiilah-permata-sukma-593305378/"
                 class="social-link"
-                ><i data-lucide="l"></i>LinkedIn</a
+                ><i class="devicon-linkedin-plain"></i>LinkedIn</a
               >
               <a href="mailto:jnpermata07@gmail.com" class="social-link"
                 ><i data-lucide="mail"></i>Email</a
@@ -71,11 +75,27 @@
         </div>
       </section>
 
+      <!-- *My Expertise -->
+      <section class="hero" id="my-expertise">
+        <h1 class="title-page">What I Work With</h1>
+
+        <div class="section-container expertise-grid">
+          {% for item in expertise %}
+          <div class="expertise-card">
+            <span class="expertise-icon-box">
+              <i class="{{ item.icon }}"></i>
+            </span>
+            <span class="expertise-name">{{ item.name }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+
       <!-- MY PROJECT PAGE -->
       <section class="hero" id="my-project">
         <h1 class="title-page">My Project</h1>
 
-        <div class="project-container">
+        <div class="section-container">
           {% for project in projects %}
           <div class="project-card">
             <div class="project-img">

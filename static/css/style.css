@@ -257,7 +257,6 @@ html {
   border: 2px solid var(--white);
 }
 
-/** MY PROJECT */
 .title-page {
   justify-self: center;
   margin-bottom: 2rem;
@@ -265,8 +264,9 @@ html {
   font-weight: 700;
 }
 
+/** MY PROJECT */
 /* PROJECT CARD */
-.project-container {
+.section-container {
   max-width: 960px;
   margin: 0 auto;
   display: grid;
@@ -357,6 +357,58 @@ html {
   align-items: center;
 }
 
+/** MY EXPERTISE */
+#my-expertise {
+  background-color: var(--black);
+}
+.expertise-grid {
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.5rem;
+  justify-content: stretch;
+}
+
+.expertise-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem 1rem;
+  border: 2px solid var(--pink-red);
+  box-shadow: 0 0 12px rgba(255, 16, 83, 0.35);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+  max-width: 960px;
+  justify-content: center;
+  align-items: center;
+  color: var(--pink-red);
+}
+
+.expertise-card:nth-child(even) {
+  border-color: var(--green);
+  box-shadow: 0 0 12px rgba(120, 188, 97, 0.35);
+  color: var(--green);
+}
+
+.expertise-card:hover {
+  transform: translateY(-4px);
+}
+
+.expertise-icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: currentColor;
+  flex-shrink: 0;
+}
+
+.expertise-name {
+  color: var(--white);
+  font-family: "Audiowide", sans-serif;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
 /** RESPONSIVE */
 @media (max-width: 600px) {
   .hero-grid {
@@ -400,7 +452,7 @@ html {
     padding: 1.5rem;
   }
 
-  .project-container {
+  .section-container {
     grid-template-columns: 1fr;
     margin: 1rem;
   }
@@ -415,5 +467,9 @@ html {
 
   .nav-sticky {
     padding: 0.85rem 2rem;
+  }
+
+  .expertise-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }

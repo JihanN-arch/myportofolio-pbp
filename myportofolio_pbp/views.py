@@ -19,7 +19,21 @@ def landing_page(request):
             "link": "https://pkm-2026-fe.vercel.app/"
         },
     ]
+    
+    expertise = [
+        {"name": "Java", "icon": "devicon-java-plain"},
+        {"name": "Python", "icon": "devicon-python-plain"},
+        {"name": "JavaScript", "icon": "devicon-javascript-plain"},
+        {"name": "HTML5", "icon": "devicon-html5-plain"},
+        {"name": "CSS3", "icon": "devicon-css3-plain"},
+        {"name": "Tailwind CSS", "icon": "devicon-tailwindcss-plain"},
+        {"name": "Bootstrap", "icon": "devicon-bootstrap-plain"},
+        {"name": "React", "icon": "devicon-react-original"},
+        {"name": "Flutter", "icon": "devicon-flutter-plain"},
+        {"name": "PostgreSQL", "icon": "devicon-postgresql-plain"},
+    ]
 
     return render(request, "index.html", {
-        "projects": projects
+        "projects": projects,
+        "expertise": expertise
     })
