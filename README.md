@@ -21,16 +21,12 @@ Umm sebenernya dari ketiga elemen semantik HTML5, saya cuma menggunakan `<sectio
 
 Saya tidak menggunakan `<article>` atau `<aside>` karena kebutuhan portofolio ini berbasis _reusable card_. Struktur portofolio ini bersifat _self-contained_ dalam bentuk modul grid/flexbox, sehingga penggunaan `<section>` yang dikombinasikan dengan pembungkus `<div>` sudah cukup efisien dan memenuhi kebutuhan desain.
 
----
-
 ### 2. Tantangan Responsive Design & Evaluasi Layout
 
 - **Tantangan Responsivitas Visual:**  
   Tantangan utama bagi saya adalah menjaga proporsi elemen visual seperti gambar dan SVG agar tidak mengalami distorsi, terpotong, atau gepeng saat diakses dari berbagai ukuran layar. Di portofolio ini, saya menerapkan properti `object-fit: cover` atau `contain` pada gambar.
 - **Evaluasi & Reposisi Elemen (Desktop ke Mobile):**  
   Dalam mengevaluasi elemen dari desktop ke _mobile_, saya mengubah susunan _multi-column grid_ menjadi _single-column_ agar konten tidak berdempetan. Saya juga mengatur _font size_ tipografi di level `:root` menggunakan unit `rem` sehingga transformasinya sesuai secara proporsional. Untuk _header_, saya menyesuaikan `padding-top` pada container utama agar _page title_ tidak tertutup oleh _sticky header_.
-
----
 
 ### 3. Batasan Static Web Murni & Rencana Iterasi
 
