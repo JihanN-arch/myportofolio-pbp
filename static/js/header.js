@@ -1,3 +1,4 @@
+// AGAR SCROOL ANTAR SECTION SMOOTH
 const header = document.querySelector("site-header");
 
 window.addEventListener("scroll", () => {

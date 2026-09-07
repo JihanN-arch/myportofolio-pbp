@@ -21,6 +21,7 @@ def landing_page(request):
     ]
     
     expertise = [
+        #! [AI-ATTRIBUTION]: Penggunaan library icon dari Devicon merupakan saran/ide dari AI (Claude)
         {"name": "Java", "icon": "devicon-java-plain"},
         {"name": "Python", "icon": "devicon-python-plain"},
         {"name": "JavaScript", "icon": "devicon-javascript-plain"},
@@ -34,6 +35,7 @@ def landing_page(request):
     ]
 
     return render(request, "index.html", {
+    #! [AI-ATTRIBUTION]: Penggunaan Jinja2 merupakan saran/ide dari AI (Claude)
         "projects": projects,
         "expertise": expertise
     })
