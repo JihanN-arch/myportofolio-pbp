@@ -4,36 +4,46 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Jihan - Portfolio</title>
+
+    <!-- *LINK GOOGLE FONT -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Audiowide&family=Limelight&family=Permanent+Marker&family=Protest+Revolution&family=Rubik+Glitch&family=Space+Grotesk:wght@500;700&display=swap"
       rel="stylesheet"
+    />
+
+    <!-- *LINK FOR ICON -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css"
     />
     <link rel="stylesheet" href="/static/css/style.css" />
   </head>
   <body>
+    <!-- *HEADER -->
     <header class="site-header">
-      <div class="container">
-        <a href="#profile" class="brand">Jihan</a>
+      <div class="nav-sticky">
+        <a href="#profile" class="brand">JIHAN</a>
         <nav>
           <a href="#profile">Profile</a>
+          <a href="#my-project">My Project</a>
         </nav>
       </div>
     </header>
 
     <main>
-      <!-- PROFILE SECTION -->
+      <!-- *ABOUT ME/HERO PAGE -->
       <section class="hero" id="profile">
         <div class="container hero-grid">
           <div class="hero-identity">
-            <p class="hero-kicker">
-              Computer Science &middot; Universitas Indonesia
-            </p>
-            <h1>Jihan Nabiilah Permata Sukma</h1>
+            <p class="hero-kicker">Hey, my name is....</p>
+            <h1>JIHAN NABIILAH PERMATA SUKMA</h1>
           </div>
           <div class="hero-photo">
             <div class="photo-block"></div>
+            <!-- Izin ga pake foto pribadi ya kak -->
+            <!-- Blm nemu yg sesuai dgn color pallate fotonya pribadinya mweheh -->
             <img
               class="avatar"
               src="/static/img/noodle.jpg"
@@ -41,7 +51,10 @@
             />
           </div>
           <div class="hero-details">
-            <p class="bio">Apa ya blm tahu mau isi apa lmao</p>
+            <p class="bio">
+              RESISTENT.
+              <span style="color: #78bc61">CREATIFITY.</span> NOLIFE.
+            </p>
             <dl class="meta-list">
               <div class="meta-row">
                 <dt>NPM</dt>
@@ -54,25 +67,76 @@
             </dl>
             <div class="social-links">
               <a href="https://github.com/JihanN-arch" class="social-link"
-                >GitHub</a
+                ><i class="devicon-github-plain"></i>GitHub</a
               >
               <a
                 href="https://www.linkedin.com/in/jihan-nabiilah-permata-sukma-593305378/"
                 class="social-link"
-                >LinkedIn</a
+                ><i class="devicon-linkedin-plain"></i>LinkedIn</a
               >
               <a href="mailto:jnpermata07@gmail.com" class="social-link"
-                >Email</a
+                ><i data-lucide="mail"></i>Email</a
               >
             </div>
           </div>
         </div>
       </section>
 
+      <!-- *MY EXPERTISE SECTION -->
+      <section class="hero" id="my-expertise">
+        <h1 class="title-page">What I Work With</h1>
+
+        <div class="section-container expertise-grid">
+          <!-- ![AI-ATTRIBUTION]: Penggunaan Jinja2 merupakan saran/ide dari AI (Claude) -->
+          {% for item in expertise %}
+          <div class="expertise-card">
+            <span class="expertise-icon-box">
+              <i class="{{ item.icon }}"></i>
+            </span>
+            <span class="expertise-name">{{ item.name }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- *MY PROJECT SECTION -->
+      <section class="hero" id="my-project">
+        <h1 class="title-page">My Project</h1>
+
+        <div class="section-container">
+          <!-- ![AI-ATTRIBUTION]: Penggunaan Jinja2 merupakan saran/ide dari AI (Claude) -->
+          {% for project in projects %}
+          <div class="project-card">
+            <div class="project-img">
+              <img src="{{project.img}}" alt="{{project.title}}" />
+            </div>
+
+            <div class="project-info">
+              <a href="{{project.link}}" target="_blank" rel="noopener">
+                <h3>{{project.title}}</h3>
+                <i data-lucide="arrow-up-right"></i>
+              </a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+    </main>
+
+    <!-- *FOOTER -->
     <footer class="site-footer">
       <div class="container">
         <p>&copy; 2026 Jihan. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
       </div>
     </footer>
+
+    <!-- *SCRIPT FOR ICON -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+      lucide.createIcons();
+    </script>
+
+    <!-- *UNTUK HEADER BEHAVIOUR -->
+    <script src="/static/js/header.js"></script>
   </body>
 </html>

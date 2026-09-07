@@ -1,4 +1,4 @@
-/* RESET DASAR AND CUSTOM PROPERTIES */
+/** RESET DASAR AND CUSTOM PROPERTIES */
 * {
   margin: 0;
   padding: 0;
@@ -6,28 +6,48 @@
 }
 
 :root {
-  --ink: #1c1917;
-  --paper: #faf6f0;
-  --accent: #d95d39;
-  --accent-dark: #a8442a;
-  --line: #e3d9c9;
-  --text-muted: #6b6459;
-  --radius: 4px;
+  /** VARIABEL WARNA */
+  --black: #000;
+  --carbon-black: #1d201f;
+  --red: #cf0f47;
+  --pink-red: #ff1053;
+  --green: #78bc61;
+  --white: #f3f3f4;
+  --gold: #eec170;
+
+  /* ![AI-ATTRIBUTION]: Penyesuanan variabel font-size untuk responsivitas disarakn oleh AI (Claude)
+  /** FONTSIZE FOR DESKTOP */
+  --fs-h1: clamp(3rem, 7vw, 5rem);
+  --fs-h2: 2rem;
+  --fs-h3: 1.25rem;
+  --fs-body: 1rem;
+  --fs-label: 0.95rem;
+  --fs-small: 0.85rem;
+  --fs-caption: 0.75rem;
+}
+
+@media (max-width: 600px) {
+  :root {
+    /** FONTSIZE FOR MOBILE */
+    --fs-h2: 1.5rem;
+    --fs-h3: 1.1rem;
+    --fs-body: 0.9375rem;
+    --fs-label: 0.8rem;
+    --fs-small: 0.75rem;
+    --fs-caption: 0.7rem;
+  }
 }
 
 body {
   font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  color: var(--ink);
-  background-color: var(--paper);
-  line-height: 1.6;
-}
-
-h1,
-.brand {
-  font-family:
-    "Space Grotesk",
-    -apple-system,
-    sans-serif;
+  color: var(--pink-red);
+  background-color: var(--black);
+  /* ![AI-ATTRIBUTION]: Pattern didapatkan dari PatternCraft (https://patterncraft.fun/) dan di konversi ke CSS oleh AI (Claude) */
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 60px 60px;
+  background-attachment: fixed;
 }
 
 .container {
@@ -36,39 +56,107 @@ h1,
   padding: 0 1.5rem;
 }
 
-/* HEADER */
-.site-header {
-  border-bottom: 1px solid var(--line);
+html {
+  scroll-behavior: smooth;
 }
 
-.site-header .container {
+h1,
+.brand {
+  font-family: "Permanent Marker", cursive;
+  letter-spacing: 0.2rem;
+  font-weight: bolder;
+}
+
+/** HEADER */
+.site-header {
+  position: fixed;
+  top: 1rem;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.nav-sticky {
+  pointer-events: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.25rem 1.5rem;
+  gap: 2rem;
+  width: 90%;
+  padding: 0.85rem 4.5rem;
+  background-color: var(--black);
+  border: 1px solid var(--pink-red);
+  border-radius: 999px;
+  transition:
+    padding 0.3s ease,
+    box-shadow 0.3s ease,
+    background-color 0.3s ease;
 }
 
-.brand {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: var(--ink);
-  text-decoration: none;
+/* perubahan saat scroll */
+.site-header.scrolled .nav-sticky {
+  padding: 0.5rem 1.75rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  background-color: var(--carbon-black);
+  backdrop-filter: blur(8px);
 }
 
-.site-header nav {
+.nav-sticky nav {
+  font-family: "Audiowide", sans-serif;
   display: flex;
+  justify-items: start;
   gap: 2rem;
 }
 
-.site-header nav a {
-  color: var(--ink);
+.nav-sticky nav a {
+  position: relative;
+  color: var(--white);
   text-decoration: none;
-  font-size: 0.95rem;
+  font-size: var(--fs-label);
+  white-space: nowrap;
+  padding-bottom: 2px;
+  transition: color 0.3s ease;
 }
 
-/* SECTION HERO CSS GRID */
+/* Animasi for hover dsj */
+.nav-sticky nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 1.5px;
+  background-color: var(--pink-red);
+  transition: width 0.3s ease;
+}
+
+.nav-sticky nav a:hover {
+  color: var(--pink-red);
+}
+
+.nav-sticky nav a:hover::after {
+  width: 100%;
+}
+
+/* *HERO SECTION */
+.brand {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--white);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
 .hero {
   padding: 4.5rem 0 5rem;
+}
+
+#profile {
+  /* Penyesuaan agar tidak terhalang dengan header */
+  padding-top: 8rem;
 }
 
 .hero-grid {
@@ -89,12 +177,13 @@ h1,
 }
 
 .hero-kicker {
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
+  font-size: var(--fs-body);
   text-transform: uppercase;
-  color: var(--accent-dark);
-  font-weight: 700;
-  margin-bottom: 0.75rem;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+  color: var(--green);
+  font-family: "Audiowide", sans-serif;
 }
 
 .hero-identity h1 {
@@ -102,10 +191,15 @@ h1,
   line-height: 0.95;
 }
 
-.bio {
-  color: var(--text-muted);
+.hero-details p {
   max-width: 480px;
   margin-bottom: 1.5rem;
+  letter-spacing: 0.3rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: ghostwhite;
+  font-size: var(--fs-body);
+  font-family: "Audiowide", sans-serif;
 }
 
 .meta-list {
@@ -115,39 +209,54 @@ h1,
 }
 
 .meta-row dt {
-  font-size: 0.75rem;
+  font-size: var(--fs-caption);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--text-muted);
+  color: gainsboro;
   margin-bottom: 0.15rem;
 }
 
 .meta-row dd {
   font-weight: 600;
+  color: var(--white);
 }
 
+/*  Social link */
 .social-links {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
 }
 
+.social-link svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
 .social-link {
-  display: inline-block;
-  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--fs-small);
   font-weight: 600;
   text-decoration: none;
-  color: var(--paper);
-  background-color: var(--ink);
-  border-radius: var(--radius);
+  color: var(--white);
+  background-color: var(--carbon-black);
+  border-radius: 4px;
   padding: 0.5rem 1.1rem;
-  transition: background-color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .social-link:hover {
-  background-color: var(--accent);
+  background-color: ghostwhite;
+  transform: translateY(-2px);
+  color: black;
 }
 
+/* Pofile photo*/
 .hero-photo {
   grid-area: photo;
   align-self: center;
@@ -160,8 +269,8 @@ h1,
   left: 1.25rem;
   width: 100%;
   height: 100%;
-  background-color: var(--accent);
-  border-radius: var(--radius);
+  background-color: var(--pink-red);
+  border-radius: 4px;
   z-index: 0;
 }
 
@@ -172,34 +281,244 @@ h1,
   width: 100%;
   aspect-ratio: 1 / 1;
   object-fit: cover;
-  border-radius: var(--radius);
-  border: 3px solid var(--ink);
+  border-radius: 4px;
+  border: 2px solid var(--white);
 }
 
-/* FOOTER */
+.title-page {
+  justify-self: center;
+  margin-bottom: 2rem;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+/** MY PROJECT SECTION */
+/* PROJECT CARD */
+.section-container {
+  max-width: 960px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  padding: 0 1.5rem;
+}
+
+.project-card {
+  background-color: var(--black);
+  border: 1px solid var(--pink-red);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 8px 8px 0 var(--red);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.project-card:hover {
+  transform: translate(-4px, -4px);
+  box-shadow: 12px 12px 0 var(--red);
+}
+
+/* ![AI ATRIBUTION]: Penyesuaan proposisi dan tata letak IMG dibantu oleh AI (Claude)  */
+/* Project img */
+.project-img {
+  width: 100%;
+  aspect-ratio: 16/9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.project-img img {
+  width: 95%;
+  height: 95%;
+  border-radius: 4px;
+  display: block;
+  object-fit: cover;
+}
+
+/* Project ingfo */
+.project-info {
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  color: var(--white);
+}
+
+.project-info svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+  align-self: center;
+  transition:
+    transform 0.25s ease,
+    color 0.25 ease;
+}
+
+.project-info a:hover svg {
+  transform: translate(3px, -3px);
+}
+
+.project-info a {
+  display: flex;
+  color: var(--white);
+  font-weight: 400;
+  border-radius: 4px;
+  text-decoration: none;
+  gap: 0.2rem;
+}
+
+.project-info h3 {
+  transition: color 0.2s ease;
+}
+
+.project-info a:hover h3 {
+  text-decoration: underline;
+}
+
+/** FOOTER */
 .site-footer {
   padding: 1.5rem;
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  border-top: 1px solid var(--line);
+  color: var(--white);
+  background-color: var(--black);
+  font-size: var(--fs-small);
+  border-top: 3px solid var(--red);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-/* RESPONSIVE */
+/** MY EXPERTISE */
+#my-expertise {
+  background-color: var(--black);
+}
+
+.expertise-grid {
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.5rem;
+  justify-content: stretch;
+  max-width: 960px;
+}
+
+.expertise-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem 1rem;
+  border: 2px solid var(--pink-red);
+  box-shadow: 0 0 12px rgba(255, 16, 83, 0.35);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+  justify-content: center;
+  align-items: center;
+  color: var(--pink-red);
+}
+
+/* ![AI-ATTRIBUTION]: Disarankan menggunakan nth-child oleh AI (Claude) untuk seleksi elemen spesifik */
+/* Jujur lupa nth-child ada waktu itu zamnnn */
+.expertise-card:nth-child(even) {
+  border-color: var(--green);
+  box-shadow: 0 0 12px rgba(120, 188, 97, 0.35);
+  color: var(--green);
+}
+
+.expertise-card:hover {
+  transform: translateY(-4px);
+}
+
+.expertise-icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-h2);
+  color: currentColor;
+  flex-shrink: 0;
+}
+
+.expertise-name {
+  color: var(--white);
+  font-family: "Audiowide", sans-serif;
+  font-size: var(--fs-label);
+  text-align: center;
+}
+
+/** RESPONSIVE */
 @media (max-width: 600px) {
+  /* Hero section */
   .hero-grid {
     grid-template-columns: 1fr;
     grid-template-areas:
       "identity"
       "photo"
       "details";
+    justify-items: center;
+  }
+
+  .hero-identity,
+  .hero-details {
+    text-align: center;
   }
 
   .hero-photo {
     max-width: 220px;
   }
 
+  .hero-kicker {
+    margin-bottom: 0.5rem;
+  }
+
+  .bio {
+    margin-top: 1rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .meta-list {
+    justify-content: center;
+  }
+
   .social-links {
-    justify-content: flex-start;
+    justify-content: center;
+  }
+
+  /* Project ingfo section*/
+  .box-card {
+    margin: 2rem 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .section-container {
+    grid-template-columns: 1fr;
+    margin: 1rem;
+  }
+
+  .project-info h3 {
+    font-size: var(--fs-h3);
+  }
+
+  /* Header */
+  #profile {
+    padding: 7.5rem 0 5rem;
+  }
+
+  .nav-sticky {
+    padding: 0.85rem 2rem;
+  }
+
+  .brand {
+    font-size: 1.2rem;
+  }
+
+  /* My expertise section */
+  .expertise-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .expertise-card {
+    padding: 1rem 0.5rem;
+    gap: 0.4rem;
   }
 }
 
