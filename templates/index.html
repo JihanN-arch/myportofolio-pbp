@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Jihan - Portfolio</title>
+    <title>{{ name }} - Portfolio</title>
 
     <!-- *LINK GOOGLE FONT -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -24,9 +24,11 @@
     <!-- *HEADER -->
     <header class="site-header">
       <div class="nav-sticky">
-        <a href="#profile" class="brand">JIHAN</a>
+        <a href="{% url 'main:show_main' %}" class="brand">{{ name }}</a>
         <nav>
-          <a href="#profile">Profile</a>
+          <a href="{% url 'main:show_main' %}">Profile</a>
+          <a href="{% url 'main:show_experience' %}">Experience</a>
+
           <a href="#my-project">My Project</a>
         </nav>
       </div>
@@ -38,7 +40,7 @@
         <div class="container hero-grid">
           <div class="hero-identity">
             <p class="hero-kicker">Hey, my name is....</p>
-            <h1>JIHAN NABIILAH PERMATA SUKMA</h1>
+            <h1>{{ name }}</h1>
           </div>
           <div class="hero-photo">
             <div class="photo-block"></div>
@@ -47,7 +49,7 @@
             <img
               class="avatar"
               src="/static/img/noodle.jpg"
-              alt="Photo of Jihan"
+              alt="Photo of {{ name }}"
             />
           </div>
           <div class="hero-details">
@@ -58,11 +60,11 @@
             <dl class="meta-list">
               <div class="meta-row">
                 <dt>NPM</dt>
-                <dd>2506549026</dd>
+                <dd>{{ npm }}</dd>
               </div>
               <div class="meta-row">
                 <dt>Program</dt>
-                <dd>S1 Ilmu Komputer</dd>
+                <dd>{{ study_program }}</dd>
               </div>
             </dl>
             <div class="social-links">
@@ -126,7 +128,9 @@
     <!-- *FOOTER -->
     <footer class="site-footer">
       <div class="container">
-        <p>&copy; 2026 Jihan. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
+        <p>
+          &copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia.
+        </p>
       </div>
     </footer>
 
