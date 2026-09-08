@@ -218,6 +218,9 @@ h1,
 #profile {
   /* Penyesuaan agar tidak terhalang dengan header */
   padding-top: 8rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .hero-grid {
