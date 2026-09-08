@@ -1,10 +1,17 @@
-// AGAR SCROOL ANTAR SECTION SMOOTH
-const header = document.querySelector("site-header");
+document.addEventListener("DOMContentLoaded", () => {
+  const hamburgerBtn = document.getElementById("hamburgerBtn");
+  const navMenu = document.getElementById("navMenu");
 
-window.addEventListener("scroll", () => {
-  if (window.scroll > 30) {
-    header.classList.add("scrolled");
-  } else {
-    header.classList.remove("scrolled");
-  }
+  hamburgerBtn.addEventListener("click", () => {
+    hamburgerBtn.classList.toggle("open");
+    navMenu.classList.toggle("open");
+  });
+
+  // Menu tertutup otomatis klo ada link yg di klik
+  navMenu.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      hamburgerBtn.classList.remove("open");
+      navMenu.classList.remove("open");
+    });
+  });
 });
