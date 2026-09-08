@@ -10,11 +10,11 @@
     {% for project in projects %}
     <div class="project-card">
       <div class="project-img">
-        <img src="{{project.img}}" alt="{{project.title}}" />
+        <img src="{{project.image}}" alt="{{project.title}}" />
       </div>
 
       <div class="project-info">
-        <a href="{{project.link}}" target="_blank" rel="noopener">
+        <a href="{{project.demo_url}}" target="_blank" rel="noopener">
           <h3>{{project.title}}</h3>
           <i data-lucide="arrow-up-right"></i>
         </a>
