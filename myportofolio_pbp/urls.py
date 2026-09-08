@@ -21,6 +21,5 @@ from myportofolio_pbp.views import landing_page
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', landing_page, name='landing_page'),
     path("", include("main.urls")),
 ]

@@ -1,0 +1,31 @@
+<header class="site-header">
+  <div class="nav-sticky">
+    {% comment %} ! IDE CLAUDE  {% endcomment %} 
+    <a href="{% url 'main:show_main' %}" class="brand">JIHAN</a>
+
+    <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <nav id="navMenu">
+      <a 
+      href="{% url 'main:show_main' %}"
+      class="{% if request.resolver_match.url_name == 'show_main' %}active {% endif %}"
+      >Profile</a>
+
+      <a 
+      href="{% url 'main:show_showcase' %}"
+      class="{% if request.resolver_match.url_name == 'show_showcase' %}active {% endif %}"
+      >Project & Expertise</a>
+
+      <a 
+      href="{% url 'main:show_experience' %}"
+      class="{% if request.resolver_match.url_name == 'show_experience' %}active {% endif %}"
+      >Experience</a>
+    </nav>  
+  </div>
+</header>
+
+

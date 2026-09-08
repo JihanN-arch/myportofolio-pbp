@@ -1,0 +1,53 @@
+{% extends "base.html" %} 
+{% block title %} Jihan - Project & Expertise {%endblock %}
+{% block content %}
+<!-- *MY PROJECT PAGE -->
+<section class="hero" id="my-project">
+  <h1 class="title-page">My Project</h1>
+
+  <div class="section-container">
+    <!-- ![AI-ATTRIBUTION]: Penggunaan Jinja2 merupakan saran/ide dari AI (Claude) -->
+    {% for project in projects %}
+    <div class="project-card">
+      <div class="project-img">
+        <img src="{{project.img}}" alt="{{project.title}}" />
+      </div>
+
+      <div class="project-info">
+        <a href="{{project.link}}" target="_blank" rel="noopener">
+          <h3>{{project.title}}</h3>
+          <i data-lucide="arrow-up-right"></i>
+        </a>
+      </div>
+    </div>
+
+    {% empty %}
+    <p style="color: var(--white); text-align: center">
+      Belum ada project yang ditambahkan
+    </p>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- *MY EXPERTISE SECTION -->
+<section class="hero" id="my-expertise">
+  <h1 class="title-page">What I Work With</h1>
+
+  <div class="section-container expertise-grid">
+    <!-- ![AI-ATTRIBUTION]: Penggunaan Jinja2 merupakan saran/ide dari AI (Claude) -->
+    {% for item in expertise %}
+    <div class="expertise-card">
+      <span class="expertise-icon-box">
+        <i class="{{ item.icon }}"></i>
+      </span>
+      <span class="expertise-name">{{ item.name }}</span>
+    </div>
+
+    {% empty %}
+    <p style="color: var(--white); text-align: center">
+      Belum ada expertise yang ditambahkan
+    </p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
