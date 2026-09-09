@@ -20,7 +20,7 @@ def show_experience(request):
 def show_showcase(request):    
     context = {
         "projects" : Project.objects.all(),
-        "expertise" : Project.objects.all()
+        "expertise" : Expertise.objects.all()
     }
     
     return render(request, "showcase.html",context)
