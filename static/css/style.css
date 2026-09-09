@@ -412,12 +412,15 @@ h1,
 
 .project-text h3 {
   margin: 0;
+  font-family: "Audiowide", sans-serif;
 }
 
 .project-text p {
-  font-size: var(--fs-body);
+  font-size: var(--fs-label);
   margin: 0;
   opacity: 0.7;
+  font-family: "Audiowide", sans-serif;
+  white-space: nowrap;
 }
 
 /* projct link */
@@ -524,11 +527,26 @@ h1,
   flex-shrink: 0;
 }
 
+.expertise-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
 .expertise-name {
   color: var(--white);
   font-family: "Audiowide", sans-serif;
   font-size: var(--fs-label);
   text-align: center;
+}
+
+.expertise-category {
+  color: var(--white);
+  font-family: "Audiowide", sans-serif;
+  font-size: var(--fs-small);
+  text-align: center;
+  opacity: 0.7;
+  font-style: italic;
 }
 
 /* EXPERIENCE SECTION CSS */
@@ -636,7 +654,7 @@ h1,
     margin: 1rem;
   }
 
-  .project-info h3 {
+  .project-text h3 {
     font-size: var(--fs-h3);
   }
 
