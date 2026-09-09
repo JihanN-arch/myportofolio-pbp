@@ -52,7 +52,11 @@
       <span class="expertise-icon-box">
         <i class="{{ item.icon }}"></i>
       </span>
-      <span class="expertise-name">{{ item.name }}</span>
+      <div class="expertise-text">
+        <span class="expertise-name">{{ item.name }}</span>
+        <span class="expertise-category">{{ item.category }}</span>
+      </div>
+      
     </div>
 
     {% empty %}
