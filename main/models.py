@@ -36,8 +36,9 @@ class Project(models.Model):
     id= models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=225)
     image = models.CharField(max_length=225, blank=True, null=True)
-    github_url = models.URLField(blank=True, null=True)
+    github_url = models.URLField(blank=True, null=True) 
     demo_url = models.URLField(blank=True, null=True)
+    # year dan category akan digunakan untuk filter dan sort
     year = models.IntegerField(blank=True, null=True)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='web')
     

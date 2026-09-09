@@ -6,7 +6,7 @@
   <h1 class="title-page">My Project</h1>
 
   <div class="section-container">
-    <!-- ![AI-ATTRIBUTION]: Penggunaan Jinja2 merupakan saran/ide dari AI (Claude) -->
+    <!-- ![AI-ATTRIBUTION]: Perapihan CSS dibantu oleh AI (Claude) -->
     {% for project in projects %}
     <div class="project-card">
       <div class="project-img">
@@ -14,10 +14,22 @@
       </div>
 
       <div class="project-info">
-        <a href="{{project.demo_url}}" target="_blank" rel="noopener">
+        <div class="project-text">
           <h3>{{project.title}}</h3>
-          <i data-lucide="arrow-up-right"></i>
-        </a>
+          <p>{{project.year}}</p>
+        </div>
+
+        <div class="project-link">
+          {% if project.github_url %}
+          <a class="project-link-border github" href="{{project.github_url}}" target="_blank" rel="noopener">
+            <i class="devicon-github-plain"></i>
+          </a>
+          {% endif %}
+
+          <a class="project-link-border" href="{{project.demo_url}}" target="_blank" rel="noopener">
+            <i data-lucide="arrow-up-right"></i>
+          </a>
+        </div>
       </div>
     </div>
 
