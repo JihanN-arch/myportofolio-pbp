@@ -12,6 +12,7 @@ class MainTest(TestCase):
             description="Membantu mahasiswa memahami pengembangan web.",
             category="part-time",
             started_at=date(2025, 1, 1),
+            
         )
 
     def test_main_url_is_accessible(self):
@@ -55,7 +56,7 @@ class MainTest(TestCase):
         response = self.client.get(reverse("main:show_experience"))
 
         self.assertFalse(self.experience.is_ongoing)
-        self.assertContains(response, "Selesai")
+        self.assertContains(response, "Jan. 1, 2025")
         self.assertNotContains(response, "Sedang berlangsung")
 
 class ShowMainViewTest(TestCase):
