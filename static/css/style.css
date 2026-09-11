@@ -12,6 +12,7 @@
   --red: #cf0f47;
   --pink-red: #ff1053;
   --green: #78bc61;
+  --green-dark: #568c45;
   --white: #ecebf3;
   --gold: #eec170;
 
@@ -561,7 +562,7 @@ h1,
   background-color: var(--black);
   border: 1px solid var(--pink-red);
   border-radius: 4px;
-  box-shadow: 0 14px 28px -8px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 4px 0px 0px var(--red);
   transition:
     transform 0.25s ease,
     box-shadow 0.25s ease,
@@ -569,18 +570,22 @@ h1,
 }
 .experience-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 36px -10px rgba(0, 0, 0, 0.65);
+  box-shadow: 0 8px 0px 0px var(--red);
 }
 .experience-card:nth-child(even) {
   border: 1px solid var(--green);
   color: var(--green);
 }
 
+.experience-card:nth-child(even):hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 0px 0px var(--green-dark);
+}
+
 .experience-toggle {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
   width: 100%;
   padding: 0;
   color: inherit;
@@ -594,6 +599,7 @@ h1,
 .experience-header {
   display: flex;
   flex-direction: column;
+  gap: 0.4rem;
 }
 
 .experience-category {
@@ -604,8 +610,9 @@ h1,
 }
 
 .experience-card h2 {
-  margin: 0.5rem 0;
+  margin: 0;
   font-size: var(--fs-h3);
+  font-family: "Audiowide", sans-serif;
 }
 
 .experience-arrow {
@@ -617,6 +624,19 @@ h1,
 
 .experience-toggle[aria-expanded="true"] .experience-arrow {
   transform: rotate(180deg);
+}
+
+.line-breaker {
+  display: block;
+  height: 1px;
+  background-color: var(--red);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.8s ease;
+}
+
+.experience-card.is-open .line-breaker {
+  transform: scaleX(1);
 }
 
 /* acordion */
@@ -631,6 +651,9 @@ h1,
 }
 
 .experience-inner-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
   overflow: hidden;
 }
 
@@ -642,11 +665,13 @@ h1,
 .empty-state {
   color: var(--pink-red);
   font-size: var(--fs-body);
+  font-weight: 500;
 }
+
 .experience-status {
   font-size: var(--fs-small);
-  font-weight: 600;
-  opacity: 0.85;
+  color: var(--red);
+  font-weight: 700;
 }
 
 /** RESPONSIVE */
