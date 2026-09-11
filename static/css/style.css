@@ -251,6 +251,10 @@ h1,
   font-family: "Audiowide", sans-serif;
 }
 
+.bio-highlight {
+  color: var(--green);
+}
+
 .hero-identity h1 {
   font-size: clamp(3rem, 7vw, 5rem);
   line-height: 0.95;
