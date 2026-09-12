@@ -81,6 +81,13 @@ h1,
   font-weight: bolder;
 }
 
+.empty-state {
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--white);
+}
 /** HEADER */
 .site-header {
   position: fixed;
