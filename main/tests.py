@@ -59,6 +59,7 @@ class MainTest(TestCase):
         self.assertContains(response, "Jan. 1, 2025")
         self.assertNotContains(response, "Sedang berlangsung")
 
+# ![AI-ATTRIBUTION]: Kode unit test di-generate oleh AI (Claude) dengan penyesuaian assertions dan mock data secara mandiri
 class ShowMainViewTest(TestCase):
     def test_show_main_url_accessible(self):
         response = self.client.get(reverse('main:show_main'))

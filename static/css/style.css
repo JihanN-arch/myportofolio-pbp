@@ -207,7 +207,7 @@ h1,
   width: 100%;
 }
 
-/*! IDE CLAUDE */
+/* ![AI-ATTRIBUTION]: kode CSS hamburger dibauat dgn mengadaptasi refrensi dari AI (Claude) */
 /* hamburger saat desktop ke hide */
 .hamburger {
   display: none;
@@ -533,6 +533,10 @@ h1,
   background-color: var(--black);
 }
 
+#my-expertise .title-page {
+  margin-top: 1.5rem;
+}
+
 .expertise-grid {
   grid-template-columns: repeat(5, 1fr);
   gap: 1.5rem;
@@ -687,6 +691,7 @@ h1,
   transform: scaleX(1);
 }
 
+/* ![AI-ATTRIBUTION]: Imolementasi acordrion untuk card experience mengadopsi contoh dari AI (Claude) dengan penyesuain mandiri  */
 /* acordion */
 .experience-detail {
   display: grid;
@@ -790,11 +795,11 @@ h1,
     font-size: 1.2rem;
   }
 
-  /* ! IDE CLAUDE */
   .hamburger {
     display: flex;
   }
 
+  /* ![AI-ATTRIBUTION]: Pembetulan logika dan debugging pada bagian ini dibantu oleh AI (Claude) */
   .nav-sticky nav {
     position: absolute;
     top: calc(100% + 0.75rem);
@@ -838,5 +843,3 @@ h1,
     gap: 0.4rem;
   }
 }
-
-/* My Project css */

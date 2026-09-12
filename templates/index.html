@@ -1,3 +1,4 @@
+<!-- ![AI-ATTRIBUTION]: Konsep modularisasi kode (template inheritance dan partial template) dirancang berdasarkan saran dari AI (Claude) -->
 {% extends "base.html" %} 
 {% block title %} Jihan - Project & Expertise {%endblock %}
 {% block content %}
@@ -20,6 +21,7 @@
     </div>
     <div class="hero-details">
       <p class="bio">
+        <!-- ![AI-ATTRIBUTION]: Implementasi view bio dibantu oleh AI (Claude) -->
         {% for segment in bio_segments %}
           {% if segment.highlight %}
             <span class="bio-highlight">{{ segment.text }}</span>
