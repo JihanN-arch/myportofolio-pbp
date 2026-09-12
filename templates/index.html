@@ -6,7 +6,7 @@
   <div class="container hero-grid">
     <div class="hero-identity">
       <p class="hero-kicker">Hey, my name is....</p>
-      <h1>JIHAN NABIILAH PERMATA SUKMA</h1>
+      <h1>{{ name }}</h1>
     </div>
     <div class="hero-photo">
       <div class="photo-block"></div>
@@ -20,8 +20,13 @@
     </div>
     <div class="hero-details">
       <p class="bio">
-        RESISTANT.
-        <span style="color: #78bc61">CREATIVITY.</span> NOLIFE.
+        {% for segment in bio_segments %}
+          {% if segment.highlight %}
+            <span class="bio-highlight">{{ segment.text }}</span>
+          {% else %}
+            {{ segment.text }}
+          {% endif %}
+        {% endfor %}
       </p>
       <dl class="meta-list">
         <div class="meta-row">

@@ -7,12 +7,16 @@ def show_main(request):
         "name" : "Jihan Nabiilah Permata Sukma",
         "npm" : "2506549026",
         "study_program" : "SI Ilmu Komputer",
+        "bio_segments": [
+            {"text": "RESISTANT. ", "highlight": False},
+            {"text": "CREATIVITY.", "highlight": True},
+            {"text": " NOLIFE.", "highlight": False},
+        ],
     }
     return render(request, "index.html", context)
 
 def show_experience(request):
     context = {
-        "name" : "Jihan",
         "experience_list" : Experience.objects.all(),
     }
     return render(request, "experience.html", context)

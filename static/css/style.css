@@ -144,7 +144,7 @@ h1,
   align-items: center;
   gap: 2rem;
   width: 90%;
-  padding: 0.85rem 4.5rem;
+  padding: 0.85rem 3.5rem;
   background-color: var(--black);
   border: 1px solid var(--pink-red);
   border-radius: 999px;
@@ -166,7 +166,7 @@ h1,
   font-family: "Audiowide", sans-serif;
   display: flex;
   justify-items: start;
-  gap: 2rem;
+  gap: 1.75rem;
 }
 
 .nav-sticky nav a {
@@ -293,6 +293,10 @@ h1,
   margin-bottom: 0.2rem;
   color: var(--green);
   font-family: "Audiowide", sans-serif;
+}
+
+.bio-highlight {
+  color: var(--green);
 }
 
 .hero-identity h1 {
@@ -605,7 +609,7 @@ h1,
   padding: 1.25rem;
   background-color: var(--black);
   border: 1px solid var(--pink-red);
-  border-radius: 4px;
+  border-radius: 8px;
   box-shadow: 0 4px 0px 0px var(--red);
   transition:
     transform 0.25s ease,
