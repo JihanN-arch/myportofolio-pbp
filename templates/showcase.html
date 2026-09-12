@@ -34,9 +34,7 @@
     </div>
 
     {% empty %}
-    <p class="empty-state" style="color: var(--white); text-align: center">
-      Belum ada project yang ditambahkan
-    </p>
+    {% include "components/emptyState.html" with empty_message="Belum ada project yang ditambahkan" %}
     {% endfor %}
   </div>
 </section>
@@ -60,9 +58,7 @@
     </div>
 
     {% empty %}
-    <p class="empty-state" style="color: var(--white); text-align: center">
-      Belum ada expertise yang ditambahkan
-    </p>
+    {% include "components/emptyState.html" with empty_message="Belum ada expertise yang ditambahkan" %}
     {% endfor %}
   </div>
 </section>
