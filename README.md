@@ -37,9 +37,43 @@ Saya tidak menggunakan `<article>` atau `<aside>` karena kebutuhan portofolio in
 
 ---
 
+# 📝 Jawaban Pertanyaan Reflektif (Tugas 2)
+
+### 1. Alur Perjalanan Request: Dari URL sampai Tampil di Browser
+
+Pas pengguna ngetik atau ngebuka alamat portofolio di _browser_, _browser_ bakal ngirim HTTP _request_ yang langsung ditangkap sama Django. Pintu masuk pertamanya ada di `urls.py` level proyek. Di sini, `urls.py` proyek bertindak kayak pengarah lalu lintas utama yang ngerutein permintaan lewat `include("main.urls")`. Begitu dioper ke `urls.py` milik aplikasi `main`, Django bakal nyocokin rute spesifik yang dicari—apakah pengguna mau buka halaman utama, `showcase/`, atau `experience/`. Setelah nemu rute yang pas, dia bakal manggil fungsi _view_ yang sesuai (misalnya `show_main`).
+
+Di sinilah fungsi _view_ bekerja sebagai otak aplikasinya. _View_ bakal ngecek apa aja data yang dibutuhin, lalu minta tolong ke `models.py` buat ngambil data aktual yang ada di _database_. Pas datanya udah dapet, _view_ bakal ngebungkus data itu jadi parameter/konteks tambahan dan ngereturn fungsi `render()` barengan sama file _template_ HTML-nya. Akhirnya, _template engine_ bakal ngerender data dinamis tersebut jadi struktur HTML utuh, terus dikirim balik ke _browser_ sampai halaman portofolionya muncul di layar pengguna.
+
+### 2. Kenapa Harus Pakai Model daripada Hardcode di Template?
+
+Ngedata bagian portofolio kayak _experience_, _projects_, atau _expertise_ di dalam **Model** itu krusial banget karena data-data ini sifatnya bakal terus bertambah seiring berjalannya waktu. Kalau kita nekat _hardcode_ tulis manual di dalam _template_ HTML, setiap ada proyek atau pengalaman baru kita harus bongkar-pasang kode markup-nya lagi. Selain bikin capek, cara ini juga rentan bikin tampilan nggak konsisten dan susah di-_maintain_.
+
+Dengan naruh data di Model, kita bisa nerapin prinsip **DRY (Don't Repeat Yourself)** secara maksimal. Struktur komponen (kayak elemen _card_) cukup kita bikin sekali aja di _template_, terus sisanya tinggal kita _looping_ pakai data dari Model. Selain itu, urusan **CRUD (Create, Read, Update, Delete)** jadi jauh lebih practical karena kita bisa nambah atau ngubah data kapan aja lewat Django Admin tanpa perlu ngotak-ngatik kode tampilan _template_-nya sama sekali.
+
+### 3. Perbedaan `makemigrations` dan `migrate`
+
+Gampangnya, beda kedua perintah ini ada di tahap perancangan versus eksekusi ke _database_. Perintah `makemigrations` itu fungsinya mirip pas kita belajar konsep awal OOP—yaitu bikin _blueprint_ (rancangan). Pas kita ngubah atau nambah struktur data di `models.py`, `makemigrations` bakal menyiapkan catatan atau _blueprint_ perubahan itu di folder `migrations/`, tapi pada tahap ini struktur tabel di _database_ aslinya belum berubah sama sekali. Nah, barulah perintah `migrate` yang bertugas buat mindahin dan nerapin _blueprint_ tadi secara fisik ke dalam _database_, jadi _database_ kita siap diisi data sesuai _blueprint_ barunya.
+
+**Contoh perubahan model yang butuh dua perintah ini:**  
+Misalnya kita mau nambahin atribut/field baru `description` pada model `Project` di `models.py`:
+
+```python
+class Project(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField()  # <-- atribut/kolom baru
+```
+
+Urutan eksekusinya wajib dua tahap:
+
+1. Jalankan `python manage.py makemigrations` buat nyiapin _blueprint_ penambahan kolom `description`.
+2. Jalankan `python manage.py migrate` buat mengeksekusi _blueprint_ tersebut ke _database_ biar kolomnya beneran terbuat di tabel.
+
+---
+
 ## 🤖 AI Disclosure & Reflection
 
-Dalam proses pengerjaan Tugas 1, saya memanfaatkan AI (**Claude**) dan (**Gemini**) sebagai alat bantu. Berikut adalah rincian penggunannya:
+Dalam proses pengerjaan Tugas 1ndan 2, saya memanfaatkan AI (**Claude**) dan (**Gemini**) sebagai alat bantu. Berikut adalah rincian penggunannya:
 
 ### 1. Prompting Strategy
 
@@ -50,9 +84,8 @@ Saya menggunakan teknik _iterative prompting_ dan _context-based debugging_. Dar
 - **Dibantu AI:**
   - Diskusi _conventional commit message_ (seperti penggunaan _prefix_ `feat`, `style`, `fix`, dll.).
   - _Troubleshooting_ staging dan konflik Git.
-  - Ide penerapan Jinja2 untuk _reusable component_.
   - Membantu mencari solusi ketika tampilan CSS tidak sesuai dengan ekspektasi di _breakpoint_ tertentu.
-  - Membantu mencari library icon.
+  - Penyediaan referensi logika dan penjelasan jika ada alur JavaScript yang belum dipami.
   - Membantu merapihkan README agar lebih terbaca dan rapih.
   - Membantu pengeditan dan penyutingan struktur kalimat pada penjelasan dokumentasi agar lebih rapih dan profesional.
 - **Dikerjakan Mandiri:**
@@ -61,7 +94,7 @@ Saya menggunakan teknik _iterative prompting_ dan _context-based debugging_. Dar
 
 ### 3. Analisis Kritis & Perbaikan Manual
 
-AI tidak selalu memberikan hasil yang sesuai dengan kebutuhan proyek dan ekspektasi saya. Beberapa perbaikan manual tetap dilakukan, sebagai contoh: saat Claude menyarankan _rule_ CSS yang tidak sesuai dengan _wireframe_, saya menolaknya dan melakukan perbaikan manual agar tampilan tetap konsisten dengan desain awal.
+AI tidak selalu memberikan hasil yang sesuai dengan kebutuhan proyek dan ekspektasi saya. Beberapa perbaikan manual tetap dilakukan, sebagai contoh: saat Claude menyarankan _rule_ CSS yang tidak sesuai dengan _wireframe_, saya menolaknya dan melakukan perbaikan manual agar tampilan tetap konsisten dengan desain awal.  Begitu pula saat responsivitas di breakpoint tertentu tidak sesuai harapan atau ketika menghadapi logika JavaScript yang belum familier, saya akan menjadikan kode dari AI sebagai referensi pemahaman logika dan mengembangkannya ulang secara mandiri.
 
 _(Catatan Evaluator: Rincian baris kode yang dibantu AI telah saya tandai dengan comment langsung di dalam file terkait)._
 
