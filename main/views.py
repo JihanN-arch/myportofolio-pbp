@@ -13,13 +13,13 @@ def show_main(request):
             {"text": " NOLIFE.", "highlight": False},
         ],
     }
-    return render(request, "index.html", context)
+    return render(request, "pages/index.html", context)
 
 def show_experience(request):
     context = {
         "experience_list" : Experience.objects.all(),
     }
-    return render(request, "experience.html", context)
+    return render(request, "pages/experience.html", context)
 
 def show_showcase(request):    
     context = {
@@ -27,4 +27,4 @@ def show_showcase(request):
         "expertise" : Expertise.objects.all()
     }
     
-    return render(request, "showcase.html",context)
+    return render(request, "pages/showcase.html",context)
