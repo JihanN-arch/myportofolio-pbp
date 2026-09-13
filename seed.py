@@ -48,10 +48,10 @@ for name, icon, category in skills:
 # Experience
 Experience.objects.create(
     title="Kontingen Gemastik XIX",
-    description="Menjadi salah satu kontingen UI untuk lomba Gemastik XIX dalam bidang software engineer",
+    description="Menjadi salah satu kontingen UI untuk lomba Gemastik XIX dalam bidang software engineer.",
     category="research",
     started_at=date(2026, 4, 26),
-    ended_at=date(2026, 8, 1),
+    ended_at=date(2026, 9, 9),
 )
 
 print("Seeding selesai!")
