@@ -19,6 +19,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(BASE_DIR / '.env.prod')
 
+# PORTO SECRET KODE
+PORTFOLIO_SECRET_CODE = os.getenv("PORTFOLIO_SECRET_CODE")
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
@@ -57,6 +59,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'myportofolio_pbp.urls'
+
+CSRF_TRUSTED_ORIGINS = ["https://pws.cs.ui.ac.id/web/project/jihan.nabiilah/myportofoliopbp/"]
 
 TEMPLATES = [
     {

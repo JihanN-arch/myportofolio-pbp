@@ -10,6 +10,7 @@
       <span></span>
     </button>
 
+    <!-- !! NANTI PERBAIKIN NAVBAR -->
     <nav id="navMenu">
       <a 
       href="{% url 'main:show_main' %}"
@@ -17,9 +18,14 @@
       >Profile</a>
 
       <a 
+      href="{% url 'main:show_projects' %}"
+      class="{% if request.resolver_match.url_name == 'show_projects' %}active {% endif %}"
+      >Projects</a>
+
+      <a 
       href="{% url 'main:show_showcase' %}"
       class="{% if request.resolver_match.url_name == 'show_showcase' %}active {% endif %}"
-      >Project & Expertise</a>
+      >Expertise</a>
 
       <a 
       href="{% url 'main:show_experience' %}"

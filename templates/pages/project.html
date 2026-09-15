@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %} Jihan - Projects {% endblock %}
+{% block content %}
+<!-- ! KITA RAPIHIN PROJECT PAGE -->
+<!-- *MY PROJECT PAGE -->
+<section class="hero" id="my-project">
+  <!-- <h1 class="title-page">My Project</h1> -->
+  <div class="project-header">
+    <h1 class="title-page">My Project</h1>
+    <a href="{% url 'main:create_project' %}" class="button project-add-button">
+      <span aria-hidden="true">+</span>
+      Tambah Proyek
+    </a>
+  </div>
+
+  <!-- *search project -->
+   <form method="get"
+        action="{% url 'main:show_projects' %}"
+        class="project-search">
+    <input type="search"
+           name="title"
+           value="{{ title_query }}"
+           placeholder="Cari berdasarkan nama proyek"
+           class="project-search__input"
+           aria-label="Cari berdasarkan nama proyek">
+    <button type="submit" class="button">Cari</button>
+  </form>
+
+  <!-- TAMPILAN CARD -->
+  <div class="section-container">
+    <!-- ![AI-ATTRIBUTION]: Perapihan CSS project card dibantu oleh AI (Claude) -->
+    {% for project in projects %}
+    <div class="project-card">
+      <div class="project-img">
+        <img src="{{project.image}}" alt="{{project.title}}" />
+      </div>
+
+      <div class="project-info">
+        <div class="project-text">
+          <h3>{{project.title}}</h3>
+          <p>{{project.year}}</p>
+        </div>
+
+        <div class="project-link">
+          {% if project.github_url %}
+          <a class="project-link-border github" href="{{project.github_url}}" target="_blank" rel="noopener">
+            <i class="devicon-github-plain"></i>
+          </a>
+          {% endif %}
+
+          <a class="project-link-border" href="{{project.demo_url}}" target="_blank" rel="noopener">
+            <i data-lucide="arrow-up-right"></i>
+          </a>
+        </div>
+      </div>
+      {% include "components/project_delete_modal.html" with project=project %}
+    </div>
+
+    {% empty %}
+    {% include "components/emptyState.html" with empty_message="Belum ada project yang ditambahkan" %}
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
