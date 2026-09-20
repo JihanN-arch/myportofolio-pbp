@@ -34,14 +34,14 @@ def create_experience(request):
     form = ExperienceForm(request.POST or None)
     
     if request.method == "POST" :
-        secret_code = request.POST.get("secret-code", "")
+        secret_code = request.POST.get("secret_code", "")
     
         if secret_code != settings.PORTFOLIO_SECRET_CODE:
             messages.error(request, "Kode rahasia salah! Kamu tidak diizinkan menambah proyek.")
         elif form.is_valid(): 
             form.save()
             messages.success(request, "Experience baru berhasil ditambahakan!")
-        return redirect("main:show_experiece")
+        return redirect("main:show_experience")
         
     context = {
         "name" : "Jihan",
@@ -71,13 +71,9 @@ def create_project(request):
         elif form.is_valid():
             form.save()
             messages.success(request, "Proyek baru berhasil ditambahkan!")
-            return redirect("main:show_projects")
+        return redirect("main:show_projects")
 
-    context = {
-        "name": "Jihan",
-        "form": form,
-    }
-    return render(request, "pages/projectForm.html", context)
+    return redirect("main:show_projects")
 
 # JSON PROJECT FOR SEARCH FITUR
 def get_projects_json(request):
@@ -105,6 +101,7 @@ def show_projects(request):
         "name": "Jihan",
         "projects": projects,
         "title_query": title_query,
+        "form": ProjectForm(), 
     }
     return render(request, "pages/project.html", context)
 
