@@ -42,7 +42,7 @@
           <h3>{{project.title}}</h3>
           <p>{{project.year}}</p>
 
-          {% include "components/delete_modal.html" with modal_id=project.get_delete_modal_id item_name=project.title delete_url=project.get_delete_url trigger_label="Hapus Proyek" %}
+          {% include "components/delete_modal.html" with modal_id=project.get_delete_modal_id item_name=project.title delete_url=project.get_delete_url trigger_label="Hapus" %}
         </div>
 
         <div class="project-link">

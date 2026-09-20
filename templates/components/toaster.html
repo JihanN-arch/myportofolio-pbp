@@ -1,0 +1,48 @@
+{% if messages %}
+<div class="toast-container" id="toastContainer">
+  {% for message in messages %}
+  <div class="toast toast--{{ message.tags }}" role="alert">
+    <span class="toast__icon">
+      {% if message.tags == 'success' %}
+        <i data-lucide="check-circle"></i>
+      {% elif message.tags == 'error' %}
+        <i data-lucide="alert-triangle"></i>
+      {% else %}
+        <i data-lucide="info"></i>
+      {% endif %}
+    </span>
+    <p class="toast__text">{{ message }}</p>
+    <button type="button" class="toast__close" aria-label="Tutup notifikasi">×</button>
+  </div>
+  {% endfor %}
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  if (typeof lucide !== "undefined") {
+    lucide.createIcons();
+  }
+
+  const toasts = document.querySelectorAll(".toast");
+
+  toasts.forEach(function (toast) {
+    const autoHide = setTimeout(function () {
+      hideToast(toast);
+    }, 4000);
+
+    const closeBtn = toast.querySelector(".toast__close");
+    closeBtn.addEventListener("click", function () {
+      clearTimeout(autoHide);
+      hideToast(toast);
+    });
+  });
+
+  function hideToast(toast) {
+    toast.classList.add("toast--hide");
+    toast.addEventListener("animationend", function () {
+      toast.remove();
+    });
+  }
+});
+</script>
+{% endif %}

@@ -23,20 +23,17 @@
     <link rel="stylesheet" href="/static/css/style.css" />
   </head>
   <body>
-    <!-- ! RAPIHIN MESSAGE POP UP -->
-    {% if messages %}
-      <div class="messages">
-        {% for message in messages %}
-          <p class="message message-{{ message.tags }}">{{ message }}</p>
-        {% endfor %}
-      </div>
-    {% endif %}
-
+    <!-- navbar -->
     {% include "components/navbar.html" %}
 
+    <!-- main -->
     <main>{% block content %}{% endblock %}</main>
 
+    <!-- footer -->
     {% include "components/footer.html" %}
+
+    <!-- toaster -->
+    {% include "components/toaster.html" %}
 
     <!-- *SCRIPT FOR ICON -->
     <script src="https://unpkg.com/lucide@latest"></script>
