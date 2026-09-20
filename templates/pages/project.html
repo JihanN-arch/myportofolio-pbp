@@ -25,7 +25,7 @@
       </button>
     </form>
 
-    {% include "components/project_add_modal.html" with form=form %}
+    {% include "components/add_modal.html" with modal_id="add-project-modal" modal_title="Tambah Proyek Baru" form_action=create_project_url form=form submit_label="Tambah" secret_id="add_project" trigger_label="Tambah Proyek" %}
   </div>
 
   <!-- TAMPILAN CARD -->
@@ -42,7 +42,7 @@
           <h3>{{project.title}}</h3>
           <p>{{project.year}}</p>
 
-          {% include "components/project_delete_modal.html" with project=project %}
+          {% include "components/delete_modal.html" with modal_id=project.get_delete_modal_id item_name=project.title delete_url=project.get_delete_url trigger_label="Hapus Proyek" %}
         </div>
 
         <div class="project-link">
@@ -69,8 +69,12 @@
       </div>
     </div>
 
-    {% empty %} 
-      {% include "components/emptyState.html" with empty_message="Belum ada project yang ditambahkan" %} 
+    {% empty %}
+      {% if title_query %}
+        {% include "components/emptyState.html" with empty_message="Proyek tidak ditemukan" %}
+      {% else %}
+        {% include "components/emptyState.html" with empty_message="Belum ada project yang ditambahkan" %}
+      {% endif %}
     {% endfor %}
   </div>
 </section>

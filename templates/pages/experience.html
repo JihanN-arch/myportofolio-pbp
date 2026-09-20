@@ -5,7 +5,27 @@
 <section class="hero" id="experience">
   <div class="container">
 
-    <h1 class="title-page">Experience</h1>
+    <div class="project-header">
+      <h1 class="title-page">Experience</h1>
+    </div>
+
+    <div class="project-toolbar">
+      <form method="get" action="{% url 'main:show_experience' %}" class="project-search">
+        <input
+          type="search"
+          name="title"
+          value="{{ title_query }}"
+          placeholder="Cari berdasarkan nama experience"
+          class="project-search__input"
+          aria-label="Cari berdasarkan nama experience"
+        />
+        <button type="submit" class="project-search__icon" aria-label="Cari">
+          <i data-lucide="search"></i>
+        </button>
+      </form>
+
+      {% include "components/add_modal.html" with modal_id="add-experience-modal" modal_title="Tambah Experience Baru" form_action=create_experience_url form=form submit_label="Tambah" secret_id="add_experience" trigger_label="Tambah Experience" %}
+    </div>
 
     <div class="experience-grid">
       {% for experience in experience_list %}
@@ -28,12 +48,22 @@
             {% else %}
             <p class="experience-status">{{ experience.started_at }} - {{ experience.ended_at }}</p>
             {% endif %}
+
+            <div class="project-actions">
+              {% include "components/edit_modal.html" with modal_id=experience.get_edit_modal_id modal_title="Edit Experience" form_action=experience.get_update_url form=experience.edit_form secret_id=experience.get_edit_modal_id trigger_label="Edit" %}
+
+              {% include "components/delete_modal.html" with modal_id=experience.get_delete_modal_id item_name=experience.title delete_url=experience.get_delete_url trigger_label="Hapus" %}
+            </div>
           </div>
         </div>
       </article>
 
       {% empty %}
-        {% include "components/emptyState.html" with empty_message="Belum ada experience yang ditambahkan" %}
+        {% if title_query %}
+          {% include "components/emptyState.html" with empty_message="Experience tidak ditemukan" %}
+        {% else %}
+          {% include "components/emptyState.html" with empty_message="Belum ada Experience yang ditambahkan" %}
+        {% endif %}
       {% endfor %}
     </div>
   </div>

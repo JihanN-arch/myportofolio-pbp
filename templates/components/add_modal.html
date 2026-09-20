@@ -1,0 +1,63 @@
+{% comment %}
+Params yang wajib dikirim:
+- modal_id: id unik popover (misal "add-project-modal")
+- modal_title: judul di dalam modal (misal "Tambah Proyek Baru")
+- form_action: hasil {% url %} untuk action form
+- form: instance form Django
+- submit_label: teks tombol submit (misal "Tambah" / "Simpan")
+- secret_id: id unik buat input password (biar nggak bentrok kalau ada banyak modal di 1 halaman)
+- trigger_label: teks tombol pemicu (opsional, kalau tidak diisi tombol pemicu disembunyikan)
+{% endcomment %}
+
+{% if trigger_label %}
+<button type="button" class="button project-add-button" popovertarget="{{ modal_id }}">
+  <span aria-hidden="true">+</span>
+  {{ trigger_label }}
+</button>
+{% endif %}
+
+<div id="{{ modal_id }}"
+     class="project-delete-modal"
+     popover="auto"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="{{ modal_id }}-title">
+  <button type="button"
+          class="project-delete-modal__backdrop"
+          popovertarget="{{ modal_id }}"
+          popovertargetaction="hide"
+          aria-label="Tutup form"></button>
+
+  <div class="project-delete-modal__content">
+    <button type="button"
+            class="project-delete-modal__close"
+            popovertarget="{{ modal_id }}"
+            popovertargetaction="hide"
+            aria-label="Tutup form">×</button>
+    <h2 id="{{ modal_id }}-title">{{ modal_title }}</h2>
+
+    <form method="post" action="{{ form_action }}" class="project-form">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="form-group">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% for error in field.errors %}
+        <p class="form-error">{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% endfor %}
+
+      <div class="form-group">
+        <label for="secret_{{ secret_id }}">Kode Rahasia</label>
+        <input type="password" name="secret_code" id="secret_{{ secret_id }}" required>
+      </div>
+
+      <div class="project-delete-modal__actions">
+        <button type="button" class="button button-secondary"
+                popovertarget="{{ modal_id }}" popovertargetaction="hide">Batal</button>
+        <button type="submit" class="button">{{ submit_label }}</button>
+      </div>
+    </form>
+  </div>
+</div>

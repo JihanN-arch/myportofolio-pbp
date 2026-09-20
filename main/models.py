@@ -1,5 +1,6 @@
 from django.db import models
 import uuid
+from django.urls import reverse
 
 # Create your models here.
 class Experience(models.Model):
@@ -25,6 +26,18 @@ class Experience(models.Model):
     def is_ongoing(self):
         return self.ended_at is None
     
+    def get_delete_url(self):
+        return reverse("main:delete_experience", args=[self.id])
+
+    def get_delete_modal_id(self):
+        return f"delete-experience-{self.id}"
+    
+    def get_edit_modal_id(self):
+        return f"edit-experience-{self.id}"
+
+    def get_update_url(self):
+        return reverse("main:update_experience", args=[self.id])
+    
 class Project(models.Model):
     CATEGORY_CHOICES = [
         ('mobile', 'Mobile'),
@@ -43,6 +56,12 @@ class Project(models.Model):
     
     def __str__(self):
         return self.title
+    
+    def get_delete_url(self):
+        return reverse("main:delete_project", args=[self.id])
+
+    def get_delete_modal_id(self):
+        return f"delete-project-{self.id}"
     
 class Expertise(models.Model):
     CATEGORY_CHOICES = [

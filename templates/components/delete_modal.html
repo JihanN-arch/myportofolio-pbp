@@ -1,0 +1,56 @@
+{% comment %}
+Params yang wajib dikirim:
+- modal_id: id unik popover (misal "delete-project-{{ project.id }}")
+- item_name: nama item yang mau dihapus, buat ditampilin di teks konfirmasi
+- delete_url: hasil {% url %} untuk action delete
+- trigger_label: teks tombol pemicu (misal "Hapus Proyek")
+{% endcomment %}
+
+<p class="experience-status">
+    <button type="button"
+            class="button button-danger"
+            popovertarget="{{ modal_id }}"
+            aria-label="Hapus {{ item_name }}">
+        {{ trigger_label }}
+    </button>
+</p>
+
+<div id="{{ modal_id }}"
+     class="project-delete-modal"
+     popover="auto"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="{{ modal_id }}-title">
+    <button type="button"
+            class="project-delete-modal__backdrop"
+            popovertarget="{{ modal_id }}"
+            popovertargetaction="hide"
+            aria-label="Tutup konfirmasi hapus"></button>
+    <div class="project-delete-modal__content">
+        <button type="button"
+                class="project-delete-modal__close"
+                popovertarget="{{ modal_id }}"
+                popovertargetaction="hide"
+                aria-label="Tutup konfirmasi hapus">×</button>
+        <h2 id="{{ modal_id }}-title">Hapus?</h2>
+        <p>Apakah Anda yakin ingin menghapus <strong>{{ item_name }}</strong>?</p>
+
+        <form method="post" action="{{ delete_url }}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="secret_{{ modal_id }}">Kode Rahasia</label>
+                <input type="password"
+                       id="secret_{{ modal_id }}"
+                       name="secret_code"
+                       placeholder="Kode Rahasia"
+                       required
+                       class="project-search__input">
+            </div>
+            <div class="project-delete-modal__actions">
+                <button type="button" class="button button-secondary"
+                        popovertarget="{{ modal_id }}" popovertargetaction="hide">Batal</button>
+                <button type="submit" class="button button-danger">Ya, Hapus</button>
+            </div>
+        </form>
+    </div>
+</div>
