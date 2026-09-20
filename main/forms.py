@@ -32,7 +32,7 @@ class ProjectForm(ModelForm):
             ),
             "image": URLInput(
                 attrs={
-                    "placeholder": "!! NTAR KITA UBAH !!",
+                    "placeholder": "Tautan Gambar Proyek",
                 }
             ),
             

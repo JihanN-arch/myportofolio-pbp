@@ -1,2 +1,2 @@
-# *.html
-# templates/**/*.html
+*.html
+templates/**/*.html

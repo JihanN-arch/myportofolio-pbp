@@ -1,30 +1,32 @@
-{% extends "base.html" %} {% block title %} Jihan - Projects {% endblock %} {%
-block content %}
+{% extends "base.html" %} 
+{% block title %} Jihan - Projects {% endblock %} 
+{% block content %}
 <!-- ! KITA RAPIHIN PROJECT PAGE -->
 <!-- *MY PROJECT PAGE -->
 <section class="hero" id="my-project">
   <!-- <h1 class="title-page">My Project</h1> -->
   <div class="project-header">
     <h1 class="title-page">My Project</h1>
-    {% include "components/project_add_modal.html" with form=form %}
   </div>
 
   <!-- *search project -->
-  <form
-    method="get"
-    action="{% url 'main:show_projects' %}"
-    class="project-search"
-  >
-    <input
-      type="search"
-      name="title"
-      value="{{ title_query }}"
-      placeholder="Cari berdasarkan nama proyek"
-      class="project-search__input"
-      aria-label="Cari berdasarkan nama proyek"
-    />
-    <button type="submit" class="button">Cari</button>
-  </form>
+  <div class="project-toolbar">
+    <form method="get" action="{% url 'main:show_projects' %}" class="project-search">
+      <input
+        type="search"
+        name="title"
+        value="{{ title_query }}"
+        placeholder="Cari berdasarkan nama proyek"
+        class="project-search__input"
+        aria-label="Cari berdasarkan nama proyek"
+      />
+      <button type="submit" class="project-search__icon" aria-label="Cari">
+        <i data-lucide="search"></i>
+      </button>
+    </form>
+
+    {% include "components/project_add_modal.html" with form=form %}
+  </div>
 
   <!-- TAMPILAN CARD -->
   <div class="section-container">
@@ -39,6 +41,8 @@ block content %}
         <div class="project-text">
           <h3>{{project.title}}</h3>
           <p>{{project.year}}</p>
+
+          {% include "components/project_delete_modal.html" with project=project %}
         </div>
 
         <div class="project-link">
@@ -63,11 +67,11 @@ block content %}
           </a>
         </div>
       </div>
-      {% include "components/project_delete_modal.html" with project=project %}
     </div>
 
-    {% empty %} {% include "components/emptyState.html" with
-    empty_message="Belum ada project yang ditambahkan" %} {% endfor %}
+    {% empty %} 
+      {% include "components/emptyState.html" with empty_message="Belum ada project yang ditambahkan" %} 
+    {% endfor %}
   </div>
 </section>
 {% endblock %}
