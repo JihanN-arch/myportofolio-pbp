@@ -3,7 +3,7 @@ from django.core import serializers
 from django.http import HttpResponse
 from django.contrib import messages
 from main.models import Experience, Project, Expertise
-from main.forms import ProjectForm
+from main.forms import ProjectForm, ExperienceForm
 from django.conf import settings
 
 # Create your views here.
@@ -22,14 +22,34 @@ def show_main(request):
     }
     return render(request, "pages/index.html", context)
 
-#* SHOW EXPERIENCE
+#* EXPERIENCE
 def show_experience(request):
     context = {
         "experience_list" : Experience.objects.all(),
     }
     return render(request, "pages/experience.html", context)
 
-
+# create
+def create_experience(request):
+    form = ExperienceForm(request.POST or None)
+    
+    if request.method == "POST" :
+        secret_code = request.POST.get("secret-code", "")
+    
+        if secret_code != settings.PORTFOLIO_SECRET_CODE:
+            messages.error(request, "Kode rahasia salah! Kamu tidak diizinkan menambah proyek.")
+        elif form.is_valid(): 
+            form.save()
+            messages.success(request, "Experience baru berhasil ditambahakan!")
+        return redirect("main:show_experiece")
+        
+    context = {
+        "name" : "Jihan",
+        "form" : form,
+    }
+    
+    return render(request, "pages/experienceForm.html", context)
+    
 #* EXPERTISE
 def show_showcase(request):    
     context = {
