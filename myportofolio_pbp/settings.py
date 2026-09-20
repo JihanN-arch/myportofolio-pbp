@@ -60,7 +60,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'myportofolio_pbp.urls'
 
-CSRF_TRUSTED_ORIGINS = ["https://pws.cs.ui.ac.id/web/project/jihan.nabiilah/myportofoliopbp/"]
+CSRF_TRUSTED_ORIGINS = ["https://jihan-nabiilah-myportofoliopbp.pws.cs.ui.ac.id"]
 
 TEMPLATES = [
     {
