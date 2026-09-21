@@ -1,3 +1,9 @@
+<!-- 
+  ![AI Attribution]
+  !Struktur komponen Toast Notification dan logika skrip auto-hide ini diinisialisasi 
+  !dengan bantuan Claude AI, lalu disesuaikan dengan kebutuhan integrasi Django Messages.
+-->
+
 {% if messages %}
 <div class="toast-container" id="toastContainer">
   {% for message in messages %}
@@ -17,6 +23,8 @@
   {% endfor %}
 </div>
 
+<!-- Note: Skrip sengaja disatukan dlm satu gile untuk menyederhanakan
+  pemuatan komponen statis -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof lucide !== "undefined") {

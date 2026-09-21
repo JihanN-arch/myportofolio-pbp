@@ -1,3 +1,8 @@
+/* !! NOTE: !! */
+/* Saya berencana memodularsikan file css seuai dengan templates mereka */
+/* kalo waktunya keburu */
+/* soalya ini udh kepanjahan dan agak ribet aja kalo perlu scrol2 TT */
+
 /** RESET DASAR AND CUSTOM PROPERTIES */
 * {
   margin: 0;
@@ -27,6 +32,7 @@
   --fs-caption: 0.75rem;
 }
 
+/* Reset cancel button yg otomatis ada di searchh.. karena jelek aja ga suka */
 .project-search__input::-webkit-search-cancel-button {
   -webkit-appearance: none;
   appearance: none;
@@ -539,7 +545,6 @@ h1,
 }
 
 /** MY EXPERTISE */
-
 #my-expertise .title-page {
   margin-top: 1.5rem;
 }
@@ -699,6 +704,7 @@ h1,
 }
 
 /* ![AI-ATTRIBUTION]: Imolementasi acordrion untuk card experience mengadopsi contoh dari AI (Claude) dengan penyesuain mandiri  */
+/* UNTUK 2 CARD ACCORDION MASIH TERBUKA SECARA BERSAMAAN, SAYA AKAN SETTING AGAR ACCORDION TERBUKA SECARA TERPISAH */
 /* acordion */
 .experience-detail {
   display: grid;
@@ -756,6 +762,8 @@ h1,
 }
 
 /** MODAL FORM  (ADD AND EDIT)*/
+/* !styling CSS untuk komponen Modal Add & Edit ini 
+  !dibuat dengan bantuan Claude AI, kemudian disesuaikan secara mandiri */
 .project-form {
   width: 100%;
   max-width: 100%;
@@ -844,6 +852,8 @@ h1,
 }
 
 /* * SEARCH BAR AND ADD BUTTON (FOR EXPERIENCE AND PROJECT) */
+/* !styling CSS untuk toolbar search ini dibuat dengan 
+  !bantuan Claude AI, kemudian disesuaikan secara mandiri */
 .project-header {
   width: 100%;
   text-align: center;
@@ -951,6 +961,8 @@ h1,
 }
 
 /** DELETE MODAL (FOR EXPERIENCE AND PROEJCT) */
+/* !styling CSS untuk komponen Modal delete ini 
+  !dibuat dengan bantuan Claude AI, kemudian disesuaikan secara mandiri */
 .project-delete-modal {
   display: none;
   position: fixed;
