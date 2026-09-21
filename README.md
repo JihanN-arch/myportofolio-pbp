@@ -37,7 +37,7 @@ Saya tidak menggunakan `<article>` atau `<aside>` karena kebutuhan portofolio in
 
 ---
 
-# 📝 Jawaban Pertanyaan Reflektif (Tugas 2)
+## 📝 Jawaban Pertanyaan Reflektif (Tugas 2)
 
 ### 1. Alur Perjalanan Request: Dari URL sampai Tampil di Browser
 
@@ -71,7 +71,7 @@ Urutan eksekusinya wajib dua tahap:
 
 ---
 
-# 📝 Jawaban Pertanyaan Reflektif (Tugas 3)
+## 📝 Jawaban Pertanyaan Reflektif (Tugas 3)
 
 ### 1. Kenapa Pakai `ModelForm` dan Kenapa Wajib `{% csrf_token %}`?
 
@@ -95,7 +95,7 @@ Jujur, saya belum pernah benar-benar memakai XML dan jauh lebih sering ketemu JS
 
 ## 🤖 AI Disclosure & Reflection
 
-Dalam proses pengerjaan Tugas 1ndan 2, saya memanfaatkan AI (**Claude**) dan (**Gemini**) sebagai alat bantu. Berikut adalah rincian penggunannya:
+Dalam proses pengerjaan Tugas 1, 2 dan 3, saya memanfaatkan AI (**Claude**) dan (**Gemini**) sebagai alat bantu. Berikut adalah rincian penggunannya:
 
 ### 1. Prompting Strategy
 
@@ -112,7 +112,7 @@ Khusus pada **Tugas 3**, karena kendala manajemen waktu akibat kepadatan jadwal 
   - Penyediaan referensi logika dan penjelasan jika ada alur JavaScript yang belum dipami.
   - Membantu merapihkan README agar lebih terbaca dan rapih.
   - Membantu pengeditan dan penyutingan struktur kalimat pada penjelasan dokumentasi agar lebih rapih dan profesional.
-- Pembuatan komponen **modal pop-up** (_add_, _edit_, dan _delete_).
+  - Pembuatan komponen **modal pop-up** (_add_, _edit_, dan _delete_).
   - Implemetasi dan _styling_ **toolbar search**.
   - Pembuatan komponen **toaster / notification toast**.
 - **Dikerjakan Mandiri:**
