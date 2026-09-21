@@ -71,6 +71,28 @@ Urutan eksekusinya wajib dua tahap:
 
 ---
 
+# 📝 Jawaban Pertanyaan Reflektif (Tugas 3)
+
+### 1. Kenapa Pakai `ModelForm` dan Kenapa Wajib `{% csrf_token %}`?
+
+- **Alasan Menggunakan `ModelForm`:**  
+  Kalau bikin form HTML secara manual, kita harus nulis elemen `<input>` satu per satu, ngambil datanya dari _request_ secara manual, lalu bikin validasi kustom di _view_ yang panjang dan berulang—jelas melanggar prinsip **DRY**. Dengan `ModelForm`, semua itu jauh lebih efisien karena Django otomatis ngebikinin _field_ form dari _model_ dan menyediakan validasi bawaan, seperti pengecekan tipe data, batas karakter (`max_length`), dan _field_ wajib diisi atau tidak. Selain itu, data yang sudah valid bisa langsung disimpan lewat `form.save()` tanpa perlu memetakan ulang tiap _field_ ke objek _model_.
+- **Alasan Wajib Menambahkan `{% csrf_token %}`:**  
+  Token ini berfungsi untuk melindungi aplikasi dari serangan **CSRF (_Cross-Site Request Forgery_)**, yaitu ketika penyerang memanfaatkan _cookie_ pengguna yang sedang login untuk mengirim permintaan palsu tanpa sepengetahuan pengguna. Dengan `{% csrf_token %}`, Django menyisipkan nilai rahasia ke dalam form. Saat form di-_submit_, Django akan mencocokkan token di form dengan token milik sesi pengguna. Kalau tidak cocok, permintaan ditolak dan muncul _error_ **403 Forbidden**.
+
+### 2. Kenapa JSON Lebih Disukai daripada XML?
+
+Jujur, saya belum pernah benar-benar memakai XML dan jauh lebih sering ketemu JSON. Sekilas lihat dari slide, XML terlihat lebih ribet karena setiap data harus dibungkus _tag_ pembuka dan penutup, sehingga hasilnya panjang dan lebih susah dibaca. Sebaliknya, JSON berbasis pasangan _key-value_ yang lebih ringkas dan mudah dibaca manusia, sehingga JSON lebih disukai dalam pengembangan aplikasi web modern.
+
+### 3. Alur View yang Mengembalikan JSON & Alasan Perlunya Serialization
+
+- **Alur Request sampai Response JSON:**  
+  Secara garis besar, _view_ mula-mula menerima _request_ dari _client_ dan membaca parameter _query_ pada URL (kalau ada). Kemudian, fungsi _view_ mengambil atau memfilter data dari _database_ lewat _model_, yang hasilnya berupa _QuerySet_ (kumpulan objek Python). Setelah itu, proses **serialization** mengubah _QuerySet_ tersebut menjadi teks berformat JSON, lalu dikirim kembali ke _client_ melalui `HttpResponse` (atau `JsonResponse`) beserta _header_ `Content-Type` yang sesuai.
+- **Kenapa Perlu Serialization:**  
+  _QuerySet_ adalah objek Python yang hidup di memori _server_, sedangkan HTTP hanya bisa mentransfer data berupa teks murni, bukan objek bahasa pemrograman. Karena itu, _serializer_ berperan sebagai "penerjemah" yang mengekstrak nilai tiap _field_ dari objek Python ke format standar JSON, sehingga datanya bisa dipahami dan diolah oleh aplikasi lain.
+
+---
+
 ## 🤖 AI Disclosure & Reflection
 
 Dalam proses pengerjaan Tugas 1ndan 2, saya memanfaatkan AI (**Claude**) dan (**Gemini**) sebagai alat bantu. Berikut adalah rincian penggunannya:
@@ -78,6 +100,8 @@ Dalam proses pengerjaan Tugas 1ndan 2, saya memanfaatkan AI (**Claude**) dan (**
 ### 1. Prompting Strategy
 
 Saya menggunakan teknik _iterative prompting_ dan _context-based debugging_. Daripada meminta AI membuat seluruh kode dari awal, saya membangun kode sendiri dan memberikan potongan kode yang bermasalah atau hasil akhir yang belum sesuai, lalu meminta penjelasan konseptual beserta solusi perbaikannya.
+
+Khusus pada **Tugas 3**, karena kendala manajemen waktu akibat kepadatan jadwal kuis serta keikutsertaan dalam _hackathon_ di minggu sebelumnya, saya sempat meminta Claude untuk merancang (_generate_) beberapa bagian kode dasar. Namun, karena kode dari AI sering kali tidak langsung pas dengan konteks proyek, saya melakukan penyesuaian ulang secara manual agar seluruh modul dapat terintegrasi dengan baik.
 
 ### 2. Pembagian Kontribusi: AI vs Penulisan Mandiri
 
@@ -88,13 +112,25 @@ Saya menggunakan teknik _iterative prompting_ dan _context-based debugging_. Dar
   - Penyediaan referensi logika dan penjelasan jika ada alur JavaScript yang belum dipami.
   - Membantu merapihkan README agar lebih terbaca dan rapih.
   - Membantu pengeditan dan penyutingan struktur kalimat pada penjelasan dokumentasi agar lebih rapih dan profesional.
+- Pembuatan komponen **modal pop-up** (_add_, _edit_, dan _delete_).
+  - Implemetasi dan _styling_ **toolbar search**.
+  - Pembuatan komponen **toaster / notification toast**.
 - **Dikerjakan Mandiri:**
   - Penulisan seluruh struktur HTML dan _layout_ CSS utama.
   - Penyesuaian akhir tampilan visual, skema warna, dan pemilihan aset proyek.
+  - Penyesuaian akhir logika, integrasi antar-komponen, dan _refactoring_ gaya tampilan.
 
 ### 3. Analisis Kritis & Perbaikan Manual
 
 AI tidak selalu memberikan hasil yang sesuai dengan kebutuhan proyek dan ekspektasi saya. Beberapa perbaikan manual tetap dilakukan, sebagai contoh: saat Claude menyarankan _rule_ CSS yang tidak sesuai dengan _wireframe_, saya menolaknya dan melakukan perbaikan manual agar tampilan tetap konsisten dengan desain awal.  Begitu pula saat responsivitas di breakpoint tertentu tidak sesuai harapan atau ketika menghadapi logika JavaScript yang belum familier, saya akan menjadikan kode dari AI sebagai referensi pemahaman logika dan mengembangkannya ulang secara mandiri.
+
+Pada Tugas 3, ketika porsi kode yang dibantu AI cukup banyak, saya mendapati beberapa masukan kode mengalami ketidakcocokan (_miss_) dengan struktur dan _style_ yang sudah saya bangun sebelumnya. Proses ini menuntut saya untuk melakukan evaluasi kritis dan perbaikan manual secara menyeluruh. Meskipun membutuhkan usaha ekstra, proses perbaikan mandiri ini justru sangat bermanfaat karena memastikan saya benar-benar memahami logika di balik kode tersebut, bukan sekadar menerimanya secara membabi buta.
+
+---
+
+🔗 **Tautan Percakapan AI:**
+
+- [Dokumentasi Percakapan Gemini](https://share.gemini.google/OVE7LGkSrSel)
 
 _(Catatan Evaluator: Rincian baris kode yang dibantu AI telah saya tandai dengan comment langsung di dalam file terkait)._
 
