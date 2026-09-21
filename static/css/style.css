@@ -50,6 +50,11 @@
   background: transparent;
 }
 
+/* biar ga bsa resize */
+.form-group textarea {
+  resize: none;
+}
+
 @media (max-width: 600px) {
   :root {
     /** FONTSIZE FOR MOBILE */
