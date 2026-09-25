@@ -29,7 +29,10 @@
         </button>
       </form>
 
-      {% include "components/add_modal.html" with modal_id="add-experience-modal" modal_title="Tambah Experience Baru" form_action=create_experience_url form=form submit_label="Tambah" secret_id="add_experience" trigger_label="Tambah Experience" %}
+      {% if user.is_superuser %} 
+        {% include "components/add_modal.html" with modal_id="add-experience-modal" modal_title="Tambah Experience Baru" form_action=create_experience_url form=form submit_label="Tambah" secret_id="add_experience" trigger_label="Tambah Experience" %}
+      {% endif %} 
+
     </div>
 
     <div class="experience-grid">
@@ -49,15 +52,18 @@
             <span class="line-breaker"></span>
             <p class="experience-description">{{ experience.description }}</p>
             {% if experience.is_ongoing %}
-            <p class="experience-status">Sedang berlangsung</p>
+              <p class="experience-status">Sedang berlangsung</p>
             {% else %}
-            <p class="experience-status">{{ experience.started_at }} - {{ experience.ended_at }}</p>
+              <p class="experience-status">{{ experience.started_at }} - {{ experience.ended_at }}</p>
             {% endif %}
 
             <div class="project-actions">
-              {% include "components/edit_modal.html" with modal_id=experience.get_edit_modal_id modal_title="Edit Experience" form_action=experience.get_update_url form=experience.edit_form secret_id=experience.get_edit_modal_id trigger_label="Edit" %}
-
-              {% include "components/delete_modal.html" with modal_id=experience.get_delete_modal_id item_name=experience.title delete_url=experience.get_delete_url trigger_label="Hapus" %}
+              
+              {% if user.is_superuser %} 
+                {% include "components/edit_modal.html" with modal_id=experience.get_edit_modal_id modal_title="Edit Experience" form_action=experience.get_update_url form=experience.edit_form secret_id=experience.get_edit_modal_id trigger_label="Edit" %}
+                {% include "components/delete_modal.html" with modal_id=experience.get_delete_modal_id item_name=experience.title delete_url=experience.get_delete_url trigger_label="Hapus" %}
+              {% endif %} 
+            
             </div>
           </div>
         </div>
