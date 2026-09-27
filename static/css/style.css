@@ -161,6 +161,7 @@ h1,
 }
 
 /** HEADER */
+/** HEADER */
 .site-header {
   position: fixed;
   top: 1rem;
@@ -174,8 +175,8 @@ h1,
 
 .nav-sticky {
   pointer-events: auto;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 2rem;
   width: 90%;
@@ -188,7 +189,6 @@ h1,
     box-shadow 0.3s ease,
     background-color 0.3s ease;
 }
-
 /* perubahan saat scroll */
 .site-header.scrolled .nav-sticky {
   padding: 0.5rem 1.75rem;
@@ -197,11 +197,23 @@ h1,
   backdrop-filter: blur(8px);
 }
 
-.nav-sticky nav {
+.nav-sticky nav#navMenu {
+  display: contents;
+}
+
+.nav-links {
   font-family: "Audiowide", sans-serif;
   display: flex;
-  justify-items: start;
+  justify-content: center;
   gap: 1.75rem;
+}
+
+.nav-auth {
+  font-family: "Audiowide", sans-serif;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1.25rem;
 }
 
 .nav-sticky nav a {
@@ -282,15 +294,125 @@ h1,
   transform: translateY(-8px) rotate(-45deg);
 }
 
-/* *HERO SECTION */
+/** NAV USER + ROLE BADGE */
+.nav-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--white);
+  font-size: var(--fs-label);
+  white-space: nowrap;
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.role-badge--owner {
+  background-color: rgba(238, 193, 112, 0.15);
+  color: var(--gold);
+  border: 1px solid var(--gold);
+}
+
+.role-badge--editor {
+  background-color: rgba(120, 188, 97, 0.15);
+  color: var(--green);
+  border: 1px solid var(--green);
+}
+
+.role-badge--user {
+  background-color: rgba(236, 235, 243, 0.1);
+  color: var(--white);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 600px) {
+  /** RESPONSIVE HEADER */
+  #profile {
+    padding: 7.5rem 0 5rem;
+  }
+
+  .nav-sticky {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.85rem 2rem;
+    position: relative;
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    font-size: 1.2rem;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  .nav-sticky nav#navMenu {
+    display: block;
+    position: absolute;
+    top: calc(100% + 0.75rem);
+    right: 0;
+    left: auto;
+    width: fit-content;
+    min-width: 200px;
+    padding: 1.5rem 1.5rem;
+    background-color: var(--black);
+    border: 1px solid var(--pink-red);
+    border-radius: 16px;
+
+    max-height: 0;
+    overflow: hidden;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-width: 0;
+    transition:
+      max-height 0.35s ease,
+      padding 0.35s ease;
+  }
+
+  .nav-sticky nav#navMenu.open {
+    max-height: 400px;
+    padding: 1.5rem 1.5rem;
+    border-width: 1px;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .nav-auth {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.75rem;
+    width: 100%;
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+  }
+}
+
 .brand {
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--white);
   text-decoration: none;
   white-space: nowrap;
+  justify-self: start;
 }
 
+/* *HERO SECTION */
 .hero {
   padding: 4.5rem 0 5rem;
 }
@@ -1314,58 +1436,6 @@ h1,
 
   .project-text h3 {
     font-size: var(--fs-h3);
-  }
-
-  /** RESPONSIVE HEADER */
-  #profile {
-    padding: 7.5rem 0 5rem;
-  }
-
-  .nav-sticky {
-    padding: 0.85rem 2rem;
-    position: relative;
-    flex-wrap: wrap;
-  }
-
-  .brand {
-    font-size: 1.2rem;
-  }
-
-  .hamburger {
-    display: flex;
-  }
-
-  /* ![AI-ATTRIBUTION]: Pembetulan logika dan debugging pada bagian ini dibantu oleh AI (Claude) */
-  .nav-sticky nav {
-    position: absolute;
-    top: calc(100% + 0.75rem);
-    right: 0;
-    left: auto;
-    width: fit-content;
-    min-width: 180px;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 1rem;
-    padding: 1.5rem 1.5rem;
-    background-color: var(--black);
-    border: 1px solid var(--pink-red);
-    border-radius: 16px;
-
-    /* defaultnya ke hide */
-    max-height: 0;
-    overflow: hidden;
-    padding-top: 0;
-    padding-bottom: 0;
-    border-width: 0;
-    transition:
-      max-height 0.35s ease,
-      padding 0.35s ease;
-  }
-
-  .nav-sticky nav.open {
-    max-height: 300px;
-    padding: 1.5rem 1.5rem;
-    border-width: 1px;
   }
 
   /** RESPONSIVE EXPERTISE */

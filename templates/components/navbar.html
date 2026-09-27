@@ -10,37 +10,38 @@
       <span></span>
     </button>
 
-    <!-- !! NANTI PERBAIKIN NAVBAR -->
     <nav id="navMenu">
-      <a 
-      href="{% url 'main:show_main' %}"
-      class="{% if request.resolver_match.url_name == 'show_main' %}active {% endif %}"
-      >Profile</a>
+      <div class="nav-links">
+        <a href="{% url 'main:show_main' %}"
+           class="{% if request.resolver_match.url_name == 'show_main' %}active {% endif %}">Profile</a>
 
-      <a 
-      href="{% url 'main:show_projects' %}"
-      class="{% if request.resolver_match.url_name == 'show_projects' %}active {% endif %}"
-      >Projects</a>
+        <a href="{% url 'main:show_projects' %}"
+           class="{% if request.resolver_match.url_name == 'show_projects' %}active {% endif %}">Projects</a>
 
-      <a 
-      href="{% url 'main:show_showcase' %}"
-      class="{% if request.resolver_match.url_name == 'show_showcase' %}active {% endif %}"
-      >Expertise</a>
+        <a href="{% url 'main:show_showcase' %}"
+           class="{% if request.resolver_match.url_name == 'show_showcase' %}active {% endif %}">Expertise</a>
 
-      <a 
-      href="{% url 'main:show_experience' %}"
-      class="{% if request.resolver_match.url_name == 'show_experience' %}active {% endif %}"
-      >Experience</a>
+        <a href="{% url 'main:show_experience' %}"
+           class="{% if request.resolver_match.url_name == 'show_experience' %}active {% endif %}">Experience</a>
+      </div>
 
-      {% if user.is_authenticated %}
-        <span class="nav-user">{{ user.username }}</span>
-        <a href="{% url 'main:logout' %}">Logout</a>
-      {% else %}
-        <a href="{% url 'main:login' %}">Login</a>
-        <a href="{% url 'main:register' %}">Register</a>
-      {% endif %}
+      <div class="nav-auth">
+        {% if user.is_authenticated %}
+          <span class="nav-user">
+            {{ user.username }}
+            {% if user.is_superuser %}
+              <span class="role-badge role-badge--owner">Owner</span>
+            {% elif is_editor %}
+              <span class="role-badge role-badge--editor">Editor</span>
+            {% else %}
+              <span class="role-badge role-badge--user">User</span>
+            {% endif %}
+          </span>
+          <a href="{% url 'main:logout' %}">Logout</a>
+        {% else %}
+          <a href="{% url 'main:login' %}">Login</a>
+        {% endif %}
+      </div>
     </nav>  
   </div>
 </header>
-
-
