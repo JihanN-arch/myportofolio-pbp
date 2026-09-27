@@ -82,7 +82,7 @@ Urutan eksekusinya wajib dua tahap:
 
 ### 2. Kenapa JSON Lebih Disukai daripada XML?
 
-Jujur, saya belum pernah benar-benar memakai XML dan jauh lebih sering ketemu JSON. Sekilas lihat dari slide, XML terlihat lebih ribet karena setiap data harus dibungkus _tag_ pembuka dan penutup, sehingga hasilnya panjang dan lebih susah dibaca. Sebaliknya, JSON berbasis pasangan _key-value_ yang lebih ringkas dan mudah dibaca manusia, sehingga JSON lebih disukai dalam pengembangan aplikasi web modern.
+Jujur, saya belum pernah benar-benar memakai XML dan jauh lebih sering ketemu JSON. Sekilas lihat dari slide, XML terlihat lebih ribet karena setiap data harus dibungkus _tag_ pembuka dan penutup, sehingga hasilnya panjang dan lebih susah dibaca. Sebaliknya, JSON berbasis pasangan _key-value_ yang lebih ringkas dan mudah dibaca manusia, sehingga JSON lebih disukai dalam pengembangan aplikasi web modern. WHO IS JSONN???!
 
 ### 3. Alur View yang Mengembalikan JSON & Alasan Perlunya Serialization
 
@@ -95,7 +95,7 @@ Jujur, saya belum pernah benar-benar memakai XML dan jauh lebih sering ketemu JS
 
 ## 🤖 AI Disclosure & Reflection
 
-Dalam proses pengerjaan Tugas 1, 2 dan 3, saya memanfaatkan AI (**Claude**) dan (**Gemini**) sebagai alat bantu. Berikut adalah rincian penggunannya:
+Dalam proses pengerjaan Tugas 1, 2, 3 dan 4, saya memanfaatkan AI (**Claude**) dan (**Gemini**) sebagai alat bantu. Berikut adalah rincian penggunannya:
 
 ### 1. Prompting Strategy
 
@@ -125,6 +125,8 @@ Khusus pada **Tugas 3**, karena kendala manajemen waktu akibat kepadatan jadwal 
 AI tidak selalu memberikan hasil yang sesuai dengan kebutuhan proyek dan ekspektasi saya. Beberapa perbaikan manual tetap dilakukan, sebagai contoh: saat Claude menyarankan _rule_ CSS yang tidak sesuai dengan _wireframe_, saya menolaknya dan melakukan perbaikan manual agar tampilan tetap konsisten dengan desain awal.  Begitu pula saat responsivitas di breakpoint tertentu tidak sesuai harapan atau ketika menghadapi logika JavaScript yang belum familier, saya akan menjadikan kode dari AI sebagai referensi pemahaman logika dan mengembangkannya ulang secara mandiri.
 
 Pada Tugas 3, ketika porsi kode yang dibantu AI cukup banyak, saya mendapati beberapa masukan kode mengalami ketidakcocokan (_miss_) dengan struktur dan _style_ yang sudah saya bangun sebelumnya. Proses ini menuntut saya untuk melakukan evaluasi kritis dan perbaikan manual secara menyeluruh. Meskipun membutuhkan usaha ekstra, proses perbaikan mandiri ini justru sangat bermanfaat karena memastikan saya benar-benar memahami logika di balik kode tersebut, bukan sekadar menerimanya secara membabi buta.
+
+Pada Tugas 4, saat menyesuaikan layout dan style pada navbar, saya sempat mengalami kebuntuan dalam memisahkan hierarki visual antara navigasi utama, identitas brand, dan menu account. Setelah sempat mencoba merombak kode secara mandiri dengan hasil yang kurang terstruktur, saya lempar kode ke AI dan menemukan pendekatan desain baru, seperti ide penggunaan badge untuk profil pengguna serta penambahan line breaker sebagai pemisah intuitif pada tampilan mobile. Meskipun menggunakan AI tanpa konfigurasi agent memerlukan penyesuaian ekstra untuk menyelaraskan kode generate dengan struktur utama, pendekatan eksploratif ini sengaja saya pilih agar saya dapat mengevaluasi ide-ide baru secara kritis, memegang kendali penuh atas hasil akhirnya, dan benar-benar memahami logika di balik setiap keputusan desain. Sama seprti di tugas sebelumnya :D
 
 ---
 
