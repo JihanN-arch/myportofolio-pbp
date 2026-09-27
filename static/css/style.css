@@ -550,7 +550,7 @@ h1,
   color: var(--black, #000);
 }
 
-/* Project star */
+/* *TOGGLE STAR */
 .star-form {
   display: inline;
 }
