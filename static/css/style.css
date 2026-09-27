@@ -674,25 +674,61 @@ h1,
 
 /* *TOGGLE STAR */
 .star-form {
-  display: inline;
+  display: inline-flex;
 }
 
 .button-star {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background: var(--ink);
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  background: var(--carbon-black);
+  color: var(--white);
+  border: 1px solid var(--white);
+  font-size: var(--fs-small);
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.button-star:hover {
+  border-color: var(--gold);
+  color: var(--gold);
 }
 
 .button-star.is-starred {
-  background: var(--accent);
+  background: var(--gold);
+  color: var(--black);
+  border-color: var(--gold);
+}
+
+.button-star.is-starred:hover {
+  background: transparent;
+  color: var(--gold);
+  transform: scale(0.97);
+}
+
+.button-star span[aria-hidden="true"] {
+  font-size: 1rem;
+  line-height: 1;
 }
 
 .star-count {
-  padding: 0.05rem 0.4rem;
+  padding: 0.05rem 0.5rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.25);
-  font-size: 0.8rem;
+  background: rgba(255, 255, 255, 0.2);
+  color: inherit;
+  font-size: var(--fs-caption);
+  font-weight: 700;
+}
+
+.button-star.is-starred .star-count {
+  background: rgba(0, 0, 0, 0.2);
 }
 
 /** FOOTER */

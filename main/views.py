@@ -130,8 +130,10 @@ def toggle_star_experience(request, experience_id):
     if request.method == "POST":
         if request.user in experience.starred_by.all():
             experience.starred_by.remove(request.user)
+            messages.info(request, f"Star pada '{experience.title}' dibatalkan.")
         else:
             experience.starred_by.add(request.user)
+            messages.success(request, f"Kamu memberi star pada '{experience.title}'!")
     return redirect("main:show_experience")        
             
             
@@ -246,9 +248,10 @@ def toggle_star_project(request, project_id):
         # Kalau belum, tambahkan star.
         if request.user in project.starred_by.all():
             project.starred_by.remove(request.user)
+            messages.info(request, f"Star pada '{project.title}' dibatalkan.")
         else:
             project.starred_by.add(request.user)
-
+            messages.success(request, f"Kamu memberi star pada '{project.title}'!")
     return redirect("main:show_projects")
 
 
