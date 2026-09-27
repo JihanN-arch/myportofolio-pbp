@@ -20,6 +20,8 @@ class Experience(models.Model):
     category = models.CharField(max_length=20, choices=EXPERIENCE_CHOICES, default='full-time')
     started_at = models.DateField()
     ended_at = models.DateField(blank=True,null=True)
+    starred_by = models.ManyToManyField(User, related_name="starred_experiences", blank=True)
+    
     def __str__(self):
         return self.title
     
@@ -38,6 +40,9 @@ class Experience(models.Model):
 
     def get_update_url(self):
         return reverse("main:update_experience", args=[self.id])
+    
+    def get_star_url(self):
+        return reverse("main:toggle_star_experience", args=[self.id])
     
 class Project(models.Model):
     CATEGORY_CHOICES = [
@@ -58,12 +63,21 @@ class Project(models.Model):
     
     def __str__(self):
         return self.title
-    
+
     def get_delete_url(self):
         return reverse("main:delete_project", args=[self.id])
 
     def get_delete_modal_id(self):
         return f"delete-project-{self.id}"
+
+    def get_edit_modal_id(self):
+        return f"edit-project-{self.id}"
+
+    def get_update_url(self):
+        return reverse("main:update_project", args=[self.id])
+
+    def get_star_url(self):
+        return reverse("main:toggle_star_project", args=[self.id])
     
 class Expertise(models.Model):
     CATEGORY_CHOICES = [

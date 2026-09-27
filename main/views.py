@@ -41,7 +41,10 @@ def get_experiences_json(request):
     if title_query:
         experiences = experiences.filter(title__icontains=title_query)
 
-    experiences_json = serializers.serialize("json", experiences)
+    experiences_json = serializers.serialize(
+        "json", experiences,
+        fields=["title", "description", "category", "started_at", "ended_at"]
+    )
     return HttpResponse(experiences_json, content_type="application/json")
 
 # show
@@ -62,34 +65,28 @@ def show_experience(request):
         "experience_list": experience_list,
         "title_query": title_query,
         "form": ExperienceForm(),
-        "create_experience_url": reverse("main:create_experience")
+        "create_experience_url": reverse("main:create_experience"),
+        "is_editor": is_editor(request.user),
     }
     return render(request, "pages/experience.html", context)
     
-# create
+# create (superuser only)
 @login_required(login_url="/login/")
 def create_experience(request):
-    if not request.user.is_superuser:
+    if not can_create_or_delete(request.user):
         raise PermissionDenied
     
     form = ExperienceForm(request.POST or None)
-    
-    if request.method == "POST" :
-        secret_code = request.POST.get("secret_code", "")
-    
-        if secret_code != settings.PORTFOLIO_SECRET_CODE:
-            messages.error(request, "Kode rahasia salah! Kamu tidak diizinkan menambah proyek.")
-        elif form.is_valid(): 
+
+    if request.method == "POST":
+        if form.is_valid():
             form.save()
-            messages.success(request, "Experience baru berhasil ditambahakan!")
+            messages.success(request, "Experience baru berhasil ditambahkan!")
+        else:
+            messages.error(request, "Data yang dimasukkan tidak valid.")
         return redirect("main:show_experience")
-        
-    context = {
-        "name" : "Jihan",
-        "form" : form,
-    }
-    
-    return render(request, "pages/experienceForm.html", context)
+
+    return redirect("main:show_experience")
 
 #update
 @login_required(login_url="/login/")
@@ -100,41 +97,42 @@ def update_experience(request, experience_id):
     experience = get_object_or_404(Experience, pk=experience_id)
     
     if request.method == "POST":
-        secret_code = request.POST.get("secret_code", "")
         form = ExperienceForm(request.POST, instance=experience)
-        
-        if secret_code != settings.PORTFOLIO_SECRET_CODE:
-            messages.error(request, "Kode rahasia salah! Kamu tidak diizinkan mengubah experience.")
-        elif form.is_valid():
+        if form.is_valid():
             form.save()
             messages.success(request, "Experience berhasil diperbarui!")
         else:
-            messages.error(request, "Data yang dimasukkan tidak valid")
-        
+            messages.error(request, "Data yang dimasukkan tidak valid.")
         return redirect("main:show_experience")
-    
+
     return redirect("main:show_experience")
 
 # delete
 @login_required(login_url="/login/")
 def delete_experience(request, experience_id):
-    if not request.user.is_superuser:
-        raise PermissionDenied    
+    if not can_create_or_delete(request.user):
+        raise PermissionDenied
 
     experience = get_object_or_404(Experience, pk = experience_id)
     
     if request.method == "POST":
-        secret_code = request.POST.get("secret_code", "")
-        
-        if secret_code != settings.PORTFOLIO_SECRET_CODE:
-            messages.error(request, "Kode rahasia salah! Kamu tidak diizinkan menghapus experience.")
-        else:
-            experience.delete()
-            messages.success(request, "Experience berhasil dihapus!")
-            
+        experience.delete()
+        messages.success(request, "Experience berhasil dihapus!")
         return redirect("main:show_experience")
-     
+
     return redirect("main:show_experience")
+
+#toggle star
+@login_required(login_url="/login/")
+def toggle_star_experience(request, experience_id):
+    experience = get_object_or_404(Experience, pk=experience_id)
+    
+    if request.method == "POST":
+        if request.user in experience.starred_by.all():
+            experience.starred_by.remove(request.user)
+        else:
+            experience.starred_by.add(request.user)
+    return redirect("main:show_experience")        
             
             
 #* EXPERTISE
@@ -149,22 +147,21 @@ def show_showcase(request):
 #* ADD PROJECT 
 @login_required(login_url="/login/")
 def create_project(request):
-    if not request.user.is_superuser:
+    if not can_create_or_delete(request.user):
         raise PermissionDenied
     
     form = ProjectForm(request.POST or None)
 
     if request.method == "POST":
-        secret_code = request.POST.get("secret_code", "")
-
-        if secret_code != settings.PORTFOLIO_SECRET_CODE:
-            messages.error(request, "Kode rahasia salah! Kamu tidak diizinkan menambah proyek.")
-        elif form.is_valid():
+        if form.is_valid():
             form.save()
             messages.success(request, "Proyek baru berhasil ditambahkan!")
+        else:
+            messages.error(request, "Data yang dimasukkan tidak valid.")
         return redirect("main:show_projects")
 
     return redirect("main:show_projects")
+
 
 # JSON PROJECT FOR SEARCH FITUR
 def get_projects_json(request):
@@ -174,7 +171,9 @@ def get_projects_json(request):
     if title_query:
         projects = projects.filter(title__icontains=title_query)
 
-    projects_json = serializers.serialize("json", projects, use_natural_foreign_keys=True)
+    projects_json = serializers.serialize(
+        "json", projects, use_natural_foreign_keys=True,
+        fields=["title", "image", "github_url", "demo_url", "year", "category"])
     return HttpResponse(projects_json, content_type="application/json")
 
 # untuk list dan search
@@ -188,19 +187,44 @@ def show_projects(request):
     projects = [project.object for project in projects]
     title_query = request.GET.get("title", "").strip()
 
+    for p in projects:
+        p.edit_form = ProjectForm(instance=p)
+        
     context = {
         "name": "Jihan",
         "projects": projects,
         "title_query": title_query,
         "form": ProjectForm(), 
-        "create_project_url": reverse("main:create_project")
+        "create_project_url": reverse("main:create_project"),
+        "is_editor": is_editor(request.user),
     }
+    
     return render(request, "pages/project.html", context)
 
+# update
+@login_required(login_url="/login/")
+def update_project(request, project_id):
+    if not can_update(request.user):
+        raise PermissionDenied
+    
+    project = get_object_or_404(Project, pk=project_id)
+    
+    if request.method == "POST":
+        form = ProjectForm(request.POST, instance=project)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Project berhasil diperbarui!")
+        else:
+            messages.error(request, "Data yang dimasukkan tidak valid")
+        
+        return redirect("main:show_projects")
+
+    return redirect("main:show_projects")
+            
 # Delete project
 @login_required(login_url="/login/")
 def delete_project(request, project_id):
-    if not request.user.is_superuser:
+    if not can_create_or_delete(request.user):
         raise PermissionDenied
     
     project = get_object_or_404(Project, pk=project_id)
@@ -258,7 +282,7 @@ def logout_user(request):
     response.delete_cookie('last_login')
     return response
 
-#* STAR
+# STAR
 @login_required(login_url="/login/")
 def toggle_star(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
@@ -272,3 +296,15 @@ def toggle_star(request, project_id):
             project.starred_by.add(request.user)
 
     return redirect("main:show_projects")
+
+#* HELPER ROLE
+def is_editor(user):
+    if not user.is_authenticated:
+        return False
+    return user.groups.filter(name="Editor").exists()
+
+def can_update(user):
+    return user.is_authenticated and (user.is_superuser or is_editor(user))
+
+def can_create_or_delete(user):
+    return user.is_authenticated and user.is_superuser
