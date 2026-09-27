@@ -58,9 +58,7 @@
             {% endif %}
 
             <div class="project-actions">
-              {% if user.is_authenticated %}
-                {% include "components/toggle_star.html" with item=experience %}
-              {% endif %}
+              {% include "components/toggle_star.html" with item=experience %}
 
               {% if user.is_superuser or is_editor %}
                 {% include "components/edit_modal.html" with modal_id=experience.get_edit_modal_id modal_title="Edit Experience" form_action=experience.get_update_url form=experience.edit_form secret_id=experience.get_edit_modal_id trigger_label="Edit" %}
