@@ -25,6 +25,7 @@
            class="{% if request.resolver_match.url_name == 'show_experience' %}active {% endif %}">Experience</a>
       </div>
 
+      <!-- ![AI-ATTRIBUTION]: Polishing layout navbar terhadap auth system dibantu oleh AI (claude) -->
       <div class="nav-auth">
         {% if user.is_authenticated %}
           <span class="nav-user">
