@@ -230,57 +230,11 @@ def delete_project(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
 
     if request.method == "POST":
-        secret_code = request.POST.get("secret_code", "")
-
-        if secret_code != settings.PORTFOLIO_SECRET_CODE:
-            messages.error(request, "Kode rahasia salah! Kamu tidak diizinkan menghapus proyek.")
-        else:
-            project.delete()
-            messages.success(request, "Project berhasil dihapus!")
-
+        project.delete()
+        messages.success(request, "Project  berhasil dihapus")
         return redirect("main:show_projects")
 
     return redirect("main:show_projects")
-
-#* AUTHENTUKASIH
-# register
-def register(request):
-    form = UserCreationForm(request.POST or None)
-
-    if request.method == "POST" and form.is_valid():
-        form.save()
-        messages.success(request, "Akun berhasil dibuat. Silakan login.")
-        return redirect("main:login")
-
-    context = {
-        "name": "Burhan",
-        "form": form,
-    }
-    return render(request, "pages/register.html", context)
-
-# login
-def login_user(request):
-    form = AuthenticationForm(request, data=request.POST or None)
-
-    if request.method == "POST" and form.is_valid():
-        user = form.get_user()
-        login(request, user)
-        response = redirect("main:show_main")
-        response.set_cookie('last_login', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-        return response
-
-    context = {
-        "name": "Burhan",
-        "form": form,
-    }
-    return render(request, "pages/login.html", context)
-
-# logout
-def logout_user(request):
-    logout(request)
-    response = redirect("main:show_main")
-    response.delete_cookie('last_login')
-    return response
 
 # STAR
 @login_required(login_url="/login/")
@@ -296,6 +250,48 @@ def toggle_star(request, project_id):
             project.starred_by.add(request.user)
 
     return redirect("main:show_projects")
+
+
+#* AUTHENTUKASIH
+# register
+def register(request):
+    form = UserCreationForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Akun berhasil dibuat. Silakan login.")
+        return redirect("main:login")
+
+    context = {
+        "form": form,
+    }
+    
+    return render(request, "pages/register.html", context)
+
+# login
+def login_user(request):
+    form = AuthenticationForm(request, data=request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        user = form.get_user()
+        login(request, user)
+        response = redirect("main:show_main")
+        response.set_cookie('last_login', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        return response
+
+    context = {
+        "form": form,
+    }
+    
+    return render(request, "pages/login.html", context)
+
+# logout
+def logout_user(request):
+    logout(request)
+    response = redirect("main:show_main")
+    response.delete_cookie('last_login')
+    return response
+
 
 #* HELPER ROLE
 def is_editor(user):
