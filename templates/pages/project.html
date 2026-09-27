@@ -50,9 +50,12 @@
           <p>{{project.year}}</p>
 
           <div class="project-actions">
-        
+            <div class="project-actions__row">
             {% include "components/toggle_star.html" with item=project %}
+            </div>
 
+
+            <div class="project-actions__row">
             {% if user.is_superuser or is_editor %}
               {% include "components/edit_modal.html" with modal_id=project.get_edit_modal_id modal_title="Edit project" form_action=project.get_update_url form=project.edit_form secret_id=project.get_edit_modal_id trigger_label="Edit" %}
             {% endif %}
@@ -60,6 +63,7 @@
             {% if user.is_superuser %}
               {% include "components/delete_modal.html" with modal_id=project.get_delete_modal_id item_name=project.title delete_url=project.get_delete_url trigger_label="Hapus" %}
             {% endif %}
+            </div>
           </div>
         </div>
 
