@@ -1,0 +1,115 @@
+/* ![AI-ATTRIBUTION]: Layout CSS dibantu oleh AI (claude)*/
+
+.auth-hero {
+  min-height: calc(100vh - 4.5rem - 5rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8rem 1.5rem 3rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 2.5rem 2rem;
+  background-color: var(--black);
+  border: 1px solid var(--pink-red);
+  border-radius: 12px;
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.5);
+}
+
+.auth-card h1 {
+  text-align: center;
+  margin-bottom: 1.75rem;
+  font-size: var(--fs-h2);
+  color: var(--pink-red);
+}
+
+.auth-card .form-group {
+  margin-bottom: 1.25rem;
+}
+
+.auth-card .form-group label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 700;
+  color: var(--white);
+  font-size: var(--fs-small);
+}
+
+.auth-card .form-group input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--pink-red);
+  border-radius: 6px;
+  background-color: var(--carbon-black);
+  color: var(--white);
+  font: inherit;
+  transition:
+    border-color 0.2s ease,
+    outline-color 0.2s ease;
+}
+
+.auth-card .form-group input:focus {
+  outline: 2px solid var(--pink-red);
+  border-color: var(--pink-red);
+}
+
+.auth-card .form-help {
+  margin-top: 0.35rem;
+  font-size: var(--fs-caption);
+  color: var(--white);
+  opacity: 0.6;
+}
+
+.auth-card .form-error {
+  color: #ff6b6b;
+  font-size: var(--fs-caption);
+  margin-top: 0.35rem;
+}
+
+.auth-card .form-message {
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+  border-radius: 6px;
+  background-color: rgba(255, 16, 83, 0.12);
+  border: 1px solid var(--pink-red);
+  color: var(--white);
+  font-size: var(--fs-small);
+  text-align: center;
+}
+
+.auth-card .button {
+  width: 100%;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.auth-card__footer {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: var(--fs-small);
+  color: var(--white);
+  opacity: 0.85;
+}
+
+.auth-card__footer a {
+  color: var(--pink-red);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-card__footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .auth-hero {
+    padding: 7rem 1rem 2rem;
+  }
+
+  .auth-card {
+    padding: 2rem 1.5rem;
+  }
+}
