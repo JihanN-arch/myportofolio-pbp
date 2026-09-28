@@ -5,14 +5,16 @@
   !fitur Projects dan Experience.
 -->
   
+<!-- ! SESUAIN DGN AJAX -->
 {% comment %}
-Params yang wajib dikirim:
+Params:
 - modal_id: id unik popover (misal "delete-project-{{ project.id }}")
-- item_name: nama item yang mau dihapus, buat ditampilin di teks konfirmasi
-- delete_url: hasil {% url %} untuk action delete
-- trigger_label: teks tombol pemicu (misal "Hapus Proyek")
+- item_name: nama item yang mau dihapus, buat ditampilin di teks konfirmasi (boleh kosong jika diisi lewat JavaScript)
+- delete_url: hasil {% url %} untuk action delete (boleh kosong jika diisi lewat JavaScript)
+- trigger_label: teks tombol pemicu (opsional, kalau tidak diisi tombol pemicu disembunyikan)
 {% endcomment %}
 
+{% if trigger_label %}
 <p class="experience-status">
     <button type="button"
             class="button button-danger"
@@ -21,6 +23,7 @@ Params yang wajib dikirim:
         {{ trigger_label }}
     </button>
 </p>
+{% endif %}
 
 <div id="{{ modal_id }}"
      class="project-delete-modal"

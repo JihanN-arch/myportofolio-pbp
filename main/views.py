@@ -1,24 +1,24 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core import serializers
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
+from django.forms.models import model_to_dict
 from main.models import Experience, Project, Expertise
 from main.forms import ProjectForm, ExperienceForm
 from django.conf import settings
 from django.urls import reverse
-from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
-from django.shortcuts import redirect, render
 import datetime
-from django.contrib.auth.decorators import login_required  
-from django.core.exceptions import PermissionDenied        
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
+from django.views.decorators.http import require_POST
 
 # Create your views here.
 
 #* PROFFILE
 def show_main(request):
-    last_login = request.COOKIES.get('last_login', 'Belum ada sesi login / Cookie tidak ditemukan')   
+    last_login = request.COOKIES.get('last_login', 'Belum ada sesi login / Cookie tidak ditemukan')
     context = {
         "name" : "Jihan Nabiilah Permata Sukma",
         "npm" : "2506549026",
@@ -35,9 +35,9 @@ def show_main(request):
 #* EXPERIENCE
 # experience for search
 def get_experiences_json(request):
-    title_query = request.GET.get("title",  "").strip() 
+    title_query = request.GET.get("title",  "").strip()
     experiences = Experience.objects.all()
-    
+
     if title_query:
         experiences = experiences.filter(title__icontains=title_query)
 
@@ -57,10 +57,10 @@ def show_experience(request):
     )
     experience_list = [exp.object for exp in experiences]
     title_query = request.GET.get("title", "").strip()
-    
+
     for exp in experience_list:
         exp.edit_form = ExperienceForm(instance=exp)
-        
+
     context = {
         "experience_list": experience_list,
         "title_query": title_query,
@@ -69,13 +69,13 @@ def show_experience(request):
         "is_editor": is_editor(request.user),
     }
     return render(request, "pages/experience.html", context)
-    
+
 # create (superuser only)
 @login_required(login_url="/login/")
 def create_experience(request):
     if not can_create_or_delete(request.user):
         raise PermissionDenied
-    
+
     form = ExperienceForm(request.POST or None)
 
     if request.method == "POST":
@@ -93,9 +93,9 @@ def create_experience(request):
 def update_experience(request, experience_id):
     if not can_update(request.user):
         raise PermissionDenied
-    
+
     experience = get_object_or_404(Experience, pk=experience_id)
-    
+
     if request.method == "POST":
         form = ExperienceForm(request.POST, instance=experience)
         if form.is_valid():
@@ -114,7 +114,7 @@ def delete_experience(request, experience_id):
         raise PermissionDenied
 
     experience = get_object_or_404(Experience, pk = experience_id)
-    
+
     if request.method == "POST":
         experience.delete()
         messages.success(request, "Experience berhasil dihapus!")
@@ -126,7 +126,7 @@ def delete_experience(request, experience_id):
 @login_required(login_url="/login/")
 def toggle_star_experience(request, experience_id):
     experience = get_object_or_404(Experience, pk=experience_id)
-    
+
     if request.method == "POST":
         if request.user in experience.starred_by.all():
             experience.starred_by.remove(request.user)
@@ -134,24 +134,24 @@ def toggle_star_experience(request, experience_id):
         else:
             experience.starred_by.add(request.user)
             messages.success(request, f"Kamu memberi star pada '{experience.title}'!")
-    return redirect("main:show_experience")        
-            
-            
+    return redirect("main:show_experience")
+
+
 #* EXPERTISE
-def show_showcase(request):    
+def show_showcase(request):
     context = {
         "expertise" : Expertise.objects.all()
     }
-    
+
     return render(request, "pages/showcase.html",context)
 
-##* PROJECT 
-#* ADD PROJECT 
+##* PROJECT
+#* ADD PROJECT
 @login_required(login_url="/login/")
 def create_project(request):
     if not can_create_or_delete(request.user):
         raise PermissionDenied
-    
+
     form = ProjectForm(request.POST or None)
 
     if request.method == "POST":
@@ -165,42 +165,73 @@ def create_project(request):
     return redirect("main:show_projects")
 
 
-# JSON PROJECT FOR SEARCH FITUR
+# ADD PROJECT via AJAX (dipanggil dari modal tambah proyek)
+# ga pke @login_required karena redirect ke halaman login ga bisa
+# dikenali sebagai kegagalan oleh fetch. AnonymousUser.is_superuser bernilai False,
+# soo pemeriksaan di bawah ini sudah menolak pengunjung yang belum login.
+@require_POST
+def create_project_ajax(request):
+    if not can_create_or_delete(request.user):
+        return JsonResponse(
+            {"message": "Hanya pemilik portofolio yang dapat menambahkan proyek."},
+            status=403,
+        )
+
+    form = ProjectForm(request.POST)
+    if form.is_valid():
+        project = form.save()
+        return JsonResponse(
+            {"message": "Proyek berhasil ditambahkan.", "pk": str(project.id)},
+            status=201,
+        )
+
+    return JsonResponse({"errors": form.errors.get_json_data()}, status=400)
+
+
+# JSON PROJECT (dipakai AJAX di halaman project)
+# JSON dirakit manual agar bisa menyisipkan data star milik user yang login
 def get_projects_json(request):
     title_query = request.GET.get("title", "").strip()
-    projects = Project.objects.all()
+    projects = Project.objects.prefetch_related("starred_by").all()
 
     if title_query:
         projects = projects.filter(title__icontains=title_query)
 
-    projects_json = serializers.serialize(
-        "json", projects, use_natural_foreign_keys=True,
-        fields=["title", "image", "github_url", "demo_url", "year", "category"])
-    return HttpResponse(projects_json, content_type="application/json")
+    data = []
+    for project in projects:
+        starred_users = project.starred_by.all()
+        data.append({
+            "pk": str(project.pk),
+            "fields": {
+                "title": project.title,
+                "image": project.image,
+                "github_url": project.github_url,
+                "demo_url": project.demo_url,
+                "year": project.year,
+                "star_count": len(starred_users),
+                "is_starred": request.user.is_authenticated and request.user in starred_users,
+                "star_url": project.get_star_url(),
+                "update_url": project.get_update_url(),
+                "delete_url": project.get_delete_url(),
+                # nilai field ProjectForm, dipakai untuk mengisi edit modal
+                "form_values": model_to_dict(project, fields=ProjectForm._meta.fields),
+            }
+        })
 
-# untuk list dan search
+    return JsonResponse(data, safe=False)
+
+# halaman project (list & search dimuat lewat AJAX)
 def show_projects(request):
-    json_response = get_projects_json(request)
-
-    projects = serializers.deserialize(
-        "json",
-        json_response.content.decode("utf-8"),
-    )
-    projects = [project.object for project in projects]
-    title_query = request.GET.get("title", "").strip()
-
-    for p in projects:
-        p.edit_form = ProjectForm(instance=p)
-        
     context = {
         "name": "Jihan",
-        "projects": projects,
-        "title_query": title_query,
-        "form": ProjectForm(), 
+        "title_query": request.GET.get("title", "").strip(),
+        "form": ProjectForm(),
+        # auto_id hanya mengubah id input agar tidak bentrok dengan modal tambah
+        "edit_form": ProjectForm(auto_id="edit_%s"),
         "create_project_url": reverse("main:create_project"),
         "is_editor": is_editor(request.user),
     }
-    
+
     return render(request, "pages/project.html", context)
 
 # update
@@ -208,9 +239,9 @@ def show_projects(request):
 def update_project(request, project_id):
     if not can_update(request.user):
         raise PermissionDenied
-    
+
     project = get_object_or_404(Project, pk=project_id)
-    
+
     if request.method == "POST":
         form = ProjectForm(request.POST, instance=project)
         if form.is_valid():
@@ -218,17 +249,17 @@ def update_project(request, project_id):
             messages.success(request, "Project berhasil diperbarui!")
         else:
             messages.error(request, "Data yang dimasukkan tidak valid")
-        
+
         return redirect("main:show_projects")
 
     return redirect("main:show_projects")
-            
+
 # Delete project
 @login_required(login_url="/login/")
 def delete_project(request, project_id):
     if not can_create_or_delete(request.user):
         raise PermissionDenied
-    
+
     project = get_object_or_404(Project, pk=project_id)
 
     if request.method == "POST":
@@ -268,7 +299,7 @@ def register(request):
     context = {
         "form": form,
     }
-    
+
     return render(request, "pages/register.html", context)
 
 # login
@@ -285,7 +316,7 @@ def login_user(request):
     context = {
         "form": form,
     }
-    
+
     return render(request, "pages/login.html", context)
 
 # logout

@@ -5,6 +5,7 @@
   !fitur Projects dan Experience.
 -->
 
+<!-- !NYESUAIN DGN AJAX -->
 {% comment %}
 Params yang wajib dikirim:
 - modal_id: id unik popover (misal "add-project-modal")
@@ -14,6 +15,7 @@ Params yang wajib dikirim:
 - submit_label: teks tombol submit (misal "Tambah" / "Simpan")
 - secret_id: id unik buat input password (biar nggak bentrok kalau ada banyak modal di 1 halaman)
 - trigger_label: teks tombol pemicu (opsional, kalau tidak diisi tombol pemicu disembunyikan)
+- form_id: id untuk elemen <form> (opsional, dipakai JavaScript untuk submit via AJAX)
 {% endcomment %}
 
 {% if trigger_label %}
@@ -43,7 +45,7 @@ Params yang wajib dikirim:
             aria-label="Tutup form">×</button>
     <h2 id="{{ modal_id }}-title">{{ modal_title }}</h2>
 
-    <form method="post" action="{{ form_action }}" class="project-form">
+    <form {% if form_id %}id="{{ form_id }}" {% endif %}method="post" action="{{ form_action }}" class="project-form">
       {% csrf_token %}
       {% for field in form %}
       <div class="form-group">

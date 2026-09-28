@@ -1,5 +1,8 @@
+from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
 from django.forms import ModelForm, TextInput, Textarea, URLInput, Select, DateInput
-
+from django.utils.html import strip_tags
+from urllib.parse import urlparse
 from main.models import Project, Experience
 
 class ProjectForm(ModelForm):
@@ -30,9 +33,10 @@ class ProjectForm(ModelForm):
                     "maxlength": 255,
                 }
             ),
-            "image": URLInput(
+            
+            "image": TextInput(
                 attrs={
-                    "placeholder": "Tautan Gambar Proyek",
+                    "placeholder": "Tautan atau path gambar proyek",
                 }
             ),
             
@@ -58,6 +62,26 @@ class ProjectForm(ModelForm):
                 }
             ),
         }
+
+
+    def clean_title(self):
+        title = strip_tags(self.cleaned_data["title"]).strip()
+        if not title:
+            raise ValidationError("Nama proyek tidak boleh hanya berisi tag HTML.")
+        return title
+
+    # image di model berupa CharField (bukan URLField), jadi kita validasi URL or path
+    # dilakukan di sini agar skema berbahaya seperti javascript: ditolak
+    def clean_image(self):
+        image = (self.cleaned_data.get("image") or "").strip()
+        if not image:
+            return None
+        # Path tanpa skema (images/foo.png, /static/foo.png) diizinkan.
+        # Yang ditolak hanya skema selain http/https, misalnya javascript:
+        scheme = urlparse(image).scheme
+        if scheme and scheme not in ("http", "https"):
+            raise ValidationError("Gambar harus berupa path file atau URL http(s)://.")
+        return image
         
 class ExperienceForm(ModelForm):
     class Meta:

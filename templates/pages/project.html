@@ -1,23 +1,25 @@
-{% extends "base.html" %} 
-{% block title %} Jihan - Projects {% endblock %} 
+{% extends "base.html" %}
+{% block title %} Jihan - Projects {% endblock %}
 {% block content %}
-<!-- 
+<!--
   ![AI Attribution]
   !1. Konsep modularisasi kode (Template Inheritance & Partial Templates) dirancang berdasarkan rekomendasi Claude AI.
   !2. Implementasi komponen Toolbar (form pencarian berbasis query string dan penyelarasan pemicu modal) dibangun dengan bantuan Claude AI.
+  !3. Adaptasi pemuatan data project dengan AJAX (Fetch API) dibantu oleh Claude AI.
 -->
+
 <!-- *MY PROJECT PAGE -->
 <section class="hero" id="my-project">
-  <!-- <h1 class="title-page">My Project</h1> -->
   <div class="project-header">
     <h1 class="title-page">My Project</h1>
   </div>
 
   <!-- *search project -->
   <div class="project-toolbar">
-    <form method="get" action="{% url 'main:show_projects' %}" class="project-search">
+    <form id="project-search-form" method="get" action="{% url 'main:show_projects' %}" class="project-search">
       <input
         type="search"
+        id="search-input"
         name="title"
         value="{{ title_query }}"
         placeholder="Cari berdasarkan nama proyek"
@@ -29,75 +31,309 @@
       </button>
     </form>
 
-    
-    {% if user.is_superuser %} 
-      {% include "components/add_modal.html" with modal_id="add-project-modal" modal_title="Tambah Proyek Baru" form_action=create_project_url form=form submit_label="Tambah" secret_id="add_project" trigger_label="Tambah Proyek" %}
+    {% if user.is_superuser %}
+      {% include "components/add_modal.html" with modal_id="add-project-modal" modal_title="Tambah Proyek Baru" form_action=create_project_url form=form submit_label="Tambah" secret_id="add_project" trigger_label="Tambah Proyek" form_id="project-form" %}
     {% endif %}
-    </div>
-
-  <!-- TAMPILAN CARD -->
-  <div class="section-container">
-    <!-- ![AI-ATTRIBUTION]: Perapihan CSS project card dibantu oleh AI (Claude) -->
-    {% for project in projects %}
-    <div class="project-card">
-      <div class="project-img">
-        <img src="{{project.image}}" alt="{{project.title}}" />
-      </div>
-
-      <div class="project-info">
-        <div class="project-text">
-          <h3>{{project.title}}</h3>
-          <p>{{project.year}}</p>
-
-          <div class="project-actions">
-            <div class="project-actions__row">
-            {% include "components/toggle_star.html" with item=project %}
-            </div>
-
-
-            <div class="project-actions__row">
-            {% if user.is_superuser or is_editor %}
-              {% include "components/edit_modal.html" with modal_id=project.get_edit_modal_id modal_title="Edit project" form_action=project.get_update_url form=project.edit_form secret_id=project.get_edit_modal_id trigger_label="Edit" %}
-            {% endif %}
-
-            {% if user.is_superuser %}
-              {% include "components/delete_modal.html" with modal_id=project.get_delete_modal_id item_name=project.title delete_url=project.get_delete_url trigger_label="Hapus" %}
-            {% endif %}
-            </div>
-          </div>
-        </div>
-
-        <div class="project-link">
-          {% if project.github_url %}
-          <a
-            class="project-link-border github"
-            href="{{project.github_url}}"
-            target="_blank"
-            rel="noopener"
-          >
-            <i class="devicon-github-plain"></i>
-          </a>
-          {% endif %}
-
-          <a
-            class="project-link-border"
-            href="{{project.demo_url}}"
-            target="_blank"
-            rel="noopener"
-          >
-            <i data-lucide="arrow-up-right"></i>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    {% empty %}
-      {% if title_query %}
-        {% include "components/emptyState.html" with empty_message="Proyek tidak ditemukan" %}
-      {% else %}
-        {% include "components/emptyState.html" with empty_message="Belum ada project yang ditambahkan" %}
-      {% endif %}
-    {% endfor %}
   </div>
+
+  <!-- *STATE HALAMAN -->
+  <div id="loading" class="hide">
+    {% include "components/emptyState.html" with empty_message="Memuat project..." %}
+  </div>
+  <div id="error" class="hide">
+    {% include "components/emptyState.html" with empty_message="Gagal memuat project. Silakan coba lagi." %}
+  </div>
+  <div id="empty" class="hide">
+    {% include "components/emptyState.html" with empty_message="Belum ada project yang ditambahkan" %}
+  </div>
+  <div id="empty-search" class="hide">
+    {% include "components/emptyState.html" with empty_message="Proyek tidak ditemukan" %}
+  </div>
+
+  <!-- ![AI-ATTRIBUTION]: Perapihan CSS project card dibantu oleh AI (Claude) -->
+  <div id="grid" class="section-container hide"></div>
+
+  {% if user.is_superuser or is_editor %}
+    {% include "components/edit_modal.html" with modal_id="edit-project-modal" modal_title="Edit project" form_action="" form=edit_form secret_id="edit-project-modal" %}
+  {% endif %}
+
+  {% if user.is_superuser %}
+    {% include "components/delete_modal.html" with modal_id="delete-project-modal" item_name="" delete_url="" %}
+  {% endif %}
 </section>
+
+<script>
+// *KONFIGURASI
+const PROJECTS_ENDPOINT = "{% url 'main:get_project_json' %}";
+const CREATE_PROJECT_ENDPOINT = "{% url 'main:create_project_ajax' %}";
+const IS_SUPERUSER = "{{ user.is_superuser|yesno:'true,false' }}" === "true";
+const IS_EDITOR = "{{ is_editor|yesno:'true,false' }}" === "true";
+const SEARCH_DEBOUNCE_DELAY = 300;
+let projectsAbortController;
+let searchDebounceTimer;
+let projectsById = new Map();
+ 
+// *ELEMEN DOM
+const sections = {
+  loading: document.getElementById("loading"),
+  error: document.getElementById("error"),
+  empty: document.getElementById("empty"),
+  emptySearch: document.getElementById("empty-search"),
+  grid: document.getElementById("grid"),
+};
+const searchForm = document.getElementById("project-search-form");
+const searchInput = document.getElementById("search-input");
+const projectForm = document.getElementById("project-form"); // null untuk non-superuser
+
+// Menyembunyikan/Menampilkan section halaman
+function showSection(name) {
+  Object.entries(sections).forEach(([key, el]) => {
+    el.classList.toggle("hide", key !== name);
+  });
+}
+ 
+ // Mengubah karakter khusus HTML menjadi entity agar ditampilkan sebagai teks
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+ 
+// Membuat elemen card project
+// *CARD PROJECT (markup mengikuti versi template sebelumnya)
+function buildProjectCard(item) {
+  const p = item.fields;
+ 
+  const githubHtml = p.github_url
+    ? `<a class="project-link-border github" href="${escapeHtml(p.github_url)}" target="_blank" rel="noopener">
+         <i class="devicon-github-plain"></i>
+       </a>`
+    : "";
+ 
+  const demoHtml = p.demo_url
+    ? `<a class="project-link-border" href="${escapeHtml(p.demo_url)}" target="_blank" rel="noopener">
+         <i data-lucide="arrow-up-right"></i>
+       </a>`
+    : "";
+ 
+  // Samain dgn toggle_star.html
+  const starHtml = `
+    <form method="post" action="${escapeHtml(p.star_url)}" class="star-form">
+      {% csrf_token %}
+      <button type="submit"
+              class="button button-star${p.is_starred ? " is-starred" : ""}"
+              title="${p.is_starred ? "Batalkan star" : "Beri star"}">
+        <span aria-hidden="true">★</span>
+        ${p.is_starred ? "Unstar" : "Star"}
+        <span class="star-count">${escapeHtml(p.star_count)}</span>
+      </button>
+    </form>`;
+ 
+  const editHtml = (IS_SUPERUSER || IS_EDITOR)
+    ? `<button type="button" class="button button-secondary" data-edit="${escapeHtml(item.pk)}">Edit</button>`
+    : "";
+ 
+  const deleteHtml = IS_SUPERUSER
+    ? `<p class="experience-status">
+         <button type="button" class="button button-danger"
+                 data-delete="${escapeHtml(item.pk)}" aria-label="Hapus ${escapeHtml(p.title)}">Hapus</button>
+       </p>`
+    : "";
+ 
+  const card = document.createElement("div");
+  card.className = "project-card";
+  card.innerHTML = `
+    <div class="project-img">
+      <img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.title)}" />
+    </div>
+    <div class="project-info">
+      <div class="project-text">
+        <h3>${escapeHtml(p.title)}</h3>
+        <p>${escapeHtml(p.year)}</p>
+        <div class="project-actions">
+          <div class="project-actions__row">${starHtml}</div>
+          <div class="project-actions__row">${editHtml}${deleteHtml}</div>
+        </div>
+      </div>
+      <div class="project-link">
+        ${githubHtml}
+        ${demoHtml}
+      </div>
+    </div>`;
+  return card;
+}
+ 
+// *FETCH DATA
+async function fetchProjects(query = "") {
+  if (projectsAbortController) projectsAbortController.abort();
+  const controller = new AbortController();
+  projectsAbortController = controller;
+
+  // klo card dh tampil biarin tetep tampil, state loading pnuh hnya untuk load pertama
+  const isShowingCards = !sections.grid.classList.contains("hide");
+  if (isShowingCards) {
+    sections.grid.classList.add("is-loading");
+    sections.grid.setAttribute("aria-busy", "true");
+  } else {
+    showSection("loading");
+  }
+
+  try {
+    const url = query ? `${PROJECTS_ENDPOINT}?title=${encodeURIComponent(query)}` : PROJECTS_ENDPOINT;
+    const response = await fetch(url, {
+      headers: { Accept: "application/json" },
+      signal: controller.signal,
+    });
+    if (!response.ok) throw new Error("Failed to fetch projects");
+
+    const projects = await response.json();
+    projectsById = new Map(projects.map(item => [item.pk, item]));
+
+    if (projects.length === 0) {
+      showSection(query ? "emptySearch" : "empty");
+      return;
+    }
+
+    sections.grid.innerHTML = "";
+    projects.forEach(item => sections.grid.appendChild(buildProjectCard(item)));
+    showSection("grid");
+
+    // Ikon lucide perlu dirender ulang untuk card baru
+    if (typeof lucide !== "undefined") lucide.createIcons();
+  } catch (error) {
+    if (error.name === "AbortError") return;
+    console.error("Error loading projects:", error);
+    showSection("error");
+  } finally {
+    // Hanya request terbaru yang boleh menghapus efek redup,
+    // supaya request lama yang dibatalkan tidak menghapusnya terlalu cepat
+    if (projectsAbortController === controller) {
+      sections.grid.classList.remove("is-loading");
+      sections.grid.removeAttribute("aria-busy");
+    }
+  }
+}
+ 
+// *MODAL EDIT & HAPUS
+function openEditModal(item) {
+  const modal = document.getElementById("edit-project-modal");
+  if (!modal || !item) return;
+ 
+  const form = modal.querySelector("form");
+  form.action = item.fields.update_url;
+ 
+  Object.entries(item.fields.form_values).forEach(([name, value]) => {
+    const field = form.elements[name];
+    if (!field || field.type === "file") return;
+ 
+    if (field.type === "checkbox") {
+      field.checked = Boolean(value);
+    } else if (field.multiple) {
+      const selected = (value || []).map(String);
+      [...field.options].forEach(opt => { opt.selected = selected.includes(opt.value); });
+    } else {
+      field.value = value ?? "";
+    }
+  });
+ 
+  modal.showPopover();
+}
+ 
+function openDeleteModal(item) {
+  const modal = document.getElementById("delete-project-modal");
+  if (!modal || !item) return;
+ 
+  modal.querySelector("form").action = item.fields.delete_url;
+  modal.querySelector("strong").textContent = item.fields.title;
+  modal.showPopover();
+}
+ 
+// one listener untuk semua tombol edit or hapus
+sections.grid.addEventListener("click", function (e) {
+  const editBtn = e.target.closest("[data-edit]");
+  const deleteBtn = e.target.closest("[data-delete]");
+  if (editBtn) openEditModal(projectsById.get(editBtn.dataset.edit));
+  if (deleteBtn) openDeleteModal(projectsById.get(deleteBtn.dataset.delete));
+});
+ 
+// *MODAL ADD PROYEK (AJAX)
+function closeProjectModal() {
+  document.getElementById("add-project-modal").hidePopover();
+}
+ 
+// Membaca nilai cookie, digunakan untuk mengambil token CSRF
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + "=")) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+ 
+async function addProject(event) {
+  event.preventDefault();
+ 
+  const submitButton = projectForm.querySelector('button[type="submit"]');
+  submitButton.disabled = true;
+ 
+  try {
+    const response = await fetch(CREATE_PROJECT_ENDPOINT, {
+      method: "POST",
+      headers: { "X-CSRFToken": getCookie("csrftoken") },
+      body: new FormData(projectForm),
+    });
+    const result = await response.json().catch(() => ({}));
+ 
+    if (response.ok) {
+      projectForm.reset();
+      closeProjectModal();
+      showToast("Berhasil", "Proyek baru berhasil ditambahkan!", "success");
+      fetchProjects(searchInput.value.trim());
+    } else {
+      const errorMessages = result.errors
+        ? Object.values(result.errors).flat().map(error => error.message)
+        : [result.message || `Terjadi kesalahan (status ${response.status}).`];
+      showToast("Gagal menambahkan proyek", errorMessages.join(" "), "error");
+    }
+  } catch (error) {
+    console.error("Error adding project:", error);
+    showToast("Gagal menambahkan proyek", "Tidak dapat terhubung ke server. Silakan coba lagi.", "error");
+  } finally {
+    submitButton.disabled = false;
+  }
+}
+ 
+if (projectForm) {
+  projectForm.addEventListener("submit", addProject);
+}
+ 
+// *SEARCH (with debouncing)
+function searchProjects() {
+  fetchProjects(searchInput.value.trim());
+}
+ 
+searchInput.addEventListener("input", function () {
+  clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = setTimeout(searchProjects, SEARCH_DEBOUNCE_DELAY);
+});
+ 
+searchForm.addEventListener("submit", function (event) {
+  event.preventDefault();
+  clearTimeout(searchDebounceTimer);
+  searchProjects();
+});
+ 
+// *START
+fetchProjects(searchInput.value.trim());
+</script>
 {% endblock %}

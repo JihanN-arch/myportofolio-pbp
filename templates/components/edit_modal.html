@@ -5,19 +5,22 @@
   !fitur Experience.
 -->
 
+<!--! SEUSAIN DGN AJAX -->
 {% comment %}
 Params:
 - modal_id: id unik popover
 - modal_title: judul modal
-- form_action: hasil {% url %} untuk action
-- form: instance form Django (WAJIB pakai instance=object biar ke-prefill)
+- form_action: hasil {% url %} untuk action (boleh kosong jika diisi lewat JavaScript)
+- form: instance form Django (WAJIB pakai instance=object biar ke-prefill, kecuali diisi lewat JavaScript)
 - secret_id: id unik input password
-- trigger_label: teks tombol pemicu
+- trigger_label: teks tombol pemicu (opsional, kalau tidak diisi tombol pemicu disembunyikan)
 {% endcomment %}
 
+{% if trigger_label %}
 <button type="button" class="button button-secondary" popovertarget="{{ modal_id }}">
   {{ trigger_label }}
 </button>
+{% endif %}
 
 <div id="{{ modal_id }}"
      class="project-delete-modal"

@@ -585,6 +585,12 @@ h1,
   padding: 0 1.5rem;
 }
 
+.section-container.is-loading {
+  opacity: 0.5;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
 .project-card {
   background-color: var(--black);
   border: 1px solid var(--pink-red);
@@ -1326,10 +1332,13 @@ h1,
 /** TOASTER */
 .toast-container {
   position: fixed;
-  bottom: 1.5rem;
-  right: 1.5rem;
-  z-index: 2000;
-  display: flex;
+  inset: auto 1.5rem 1.5rem auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+  display: none;
   flex-direction: column-reverse;
   gap: 0.75rem;
   max-width: 360px;
@@ -1350,6 +1359,10 @@ h1,
   color: var(--white);
   animation: toast-in 0.3s ease forwards;
   backdrop-filter: blur(4px);
+}
+
+.toast-container:popover-open {
+  display: flex;
 }
 
 .toast.toast--hide {
@@ -1411,6 +1424,16 @@ h1,
   opacity: 1;
 }
 
+.toast__title {
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
+.toast__message {
+  margin: 0;
+  opacity: 0.8;
+}
+
 @keyframes toast-in {
   from {
     opacity: 0;
@@ -1435,13 +1458,15 @@ h1,
 
 @media (max-width: 600px) {
   .toast-container {
-    bottom: 1rem;
-    right: 1rem;
-    left: 1rem;
-    top: auto;
+    inset: auto 1rem 1rem 1rem;
     width: auto;
     max-width: none;
   }
+}
+
+/** UTILITY */
+.hide {
+  display: none !important;
 }
 
 /** RESPONSIVE */

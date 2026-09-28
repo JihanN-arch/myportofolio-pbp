@@ -4,8 +4,7 @@
   !dengan bantuan Claude AI, lalu disesuaikan dengan kebutuhan integrasi Django Messages.
 -->
 
-{% if messages %}
-<div class="toast-container" id="toastContainer">
+<div class="toast-container" id="toastContainer" popover="manual">
   {% for message in messages %}
   <div class="toast toast--{{ message.tags }}" role="alert">
     <span class="toast__icon">
@@ -23,34 +22,85 @@
   {% endfor %}
 </div>
 
-<!-- Note: Skrip sengaja disatukan dlm satu gile untuk menyederhanakan
+<template id="toastTemplate">
+  <div class="toast" role="alert">
+    <span class="toast__icon"><i></i></span>
+    <div class="toast__text">
+      <strong class="toast__title"></strong>
+      <p class="toast__message"></p>
+    </div>
+    <button type="button" class="toast__close" aria-label="Tutup notifikasi">×</button>
+  </div>
+</template>
+
+<!-- Note: Skrip sengaja disatukan dlm satu file untuk menyederhanakan
   pemuatan komponen statis -->
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+const TOAST_ICONS = { success: "check-circle", error: "alert-triangle" };
+
+// adjust 
+function hideToast(toast) {
+  if (toast.classList.contains("toast--hide")) return;
+  clearTimeout(toast.autoHide);
+  toast.classList.add("toast--hide");
+  toast.addEventListener("animationend", function () {
+    toast.remove();
+    const container = document.getElementById("toastContainer");
+    if (container.children.length === 0 && container.matches(":popover-open")) {
+      container.hidePopover();
+    }
+  }, { once: true });
+}
+
+// baru
+function setupToast(toast, duration) {
+  toast.autoHide = setTimeout(function () {
+    hideToast(toast);
+  }, duration);
+  toast.querySelector(".toast__close").addEventListener("click", function () {
+    hideToast(toast);
+  });
+}
+
+// adjust fungsi sesuai tutorial
+function showToast(title, message = "", type = "normal", duration = 4000) {
+  const container = document.getElementById("toastContainer");
+  const toast = document.getElementById("toastTemplate")
+    .content.firstElementChild.cloneNode(true);
+
+  toast.classList.add("toast--" + type);
+  toast.querySelector("i").setAttribute("data-lucide", TOAST_ICONS[type] || "info");
+  toast.querySelector(".toast__title").textContent = title;
+
+  const messageEl = toast.querySelector(".toast__message");
+  if (message) {
+    messageEl.textContent = message;
+  } else {
+    messageEl.remove();
+  }
+
+  container.appendChild(toast);
+  if (!container.matches(":popover-open")) {
+    container.showPopover();
+  }
   if (typeof lucide !== "undefined") {
     lucide.createIcons();
   }
+  setupToast(toast, duration);
+}
 
-  const toasts = document.querySelectorAll(".toast");
+// adjust
+document.addEventListener("DOMContentLoaded", function () {
+  const container = document.getElementById("toastContainer");
+  const toasts = container.querySelectorAll(".toast");
+  if (toasts.length === 0) return;
 
-  toasts.forEach(function (toast) {
-    const autoHide = setTimeout(function () {
-      hideToast(toast);
-    }, 4000);
-
-    const closeBtn = toast.querySelector(".toast__close");
-    closeBtn.addEventListener("click", function () {
-      clearTimeout(autoHide);
-      hideToast(toast);
-    });
-  });
-
-  function hideToast(toast) {
-    toast.classList.add("toast--hide");
-    toast.addEventListener("animationend", function () {
-      toast.remove();
-    });
+  container.showPopover();
+  if (typeof lucide !== "undefined") {
+    lucide.createIcons();
   }
+  toasts.forEach(function (toast) {
+    setupToast(toast, 4000);
+  });
 });
 </script>
-{% endif %}
