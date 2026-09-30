@@ -4,6 +4,7 @@ from django.forms import ModelForm, TextInput, Textarea, URLInput, Select, DateI
 from django.utils.html import strip_tags
 from urllib.parse import urlparse
 from main.models import Project, Experience
+import datetime
 
 class ProjectForm(ModelForm):
     class Meta:
@@ -72,7 +73,7 @@ class ProjectForm(ModelForm):
 
     # image di model berupa CharField (bukan URLField), jadi kita validasi URL or path
     # dilakukan di sini agar skema berbahaya seperti javascript: ditolak
-    def clean_image(self):
+    def clean_image(self): # nanti bbakal kubuah jadi URL cuma untuk sekarang seperti ini dulu
         image = (self.cleaned_data.get("image") or "").strip()
         if not image:
             return None
@@ -82,6 +83,14 @@ class ProjectForm(ModelForm):
         if scheme and scheme not in ("http", "https"):
             raise ValidationError("Gambar harus berupa path file atau URL http(s)://.")
         return image
+
+    # Untuk membersihkan jika user memasukan range yang diluar akal
+    def clean_year(self):
+        year = self.cleaned_data.get("year")
+        current_year = datetime.date.today().year
+        if year is not None and not (2000 <= year <= current_year):
+            raise ValidationError(f"Tahun harus antara 2000 dan {current_year}.")
+        return year
         
 class ExperienceForm(ModelForm):
     class Meta:
