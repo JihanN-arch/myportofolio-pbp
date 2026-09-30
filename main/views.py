@@ -1,11 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core import serializers
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.contrib import messages
 from django.forms.models import model_to_dict
 from main.models import Experience, Project, Expertise
 from main.forms import ProjectForm, ExperienceForm
-from django.conf import settings
+from django.utils.formats import date_format
 from django.urls import reverse
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
@@ -41,33 +41,39 @@ def get_experiences_json(request):
     if title_query:
         experiences = experiences.filter(title__icontains=title_query)
 
-    experiences_json = serializers.serialize(
-        "json", experiences,
-        fields=["title", "description", "category", "started_at", "ended_at"]
-    )
-    return HttpResponse(experiences_json, content_type="application/json")
+    data = []
+    for experience in experiences:
+        starred_users = experience.starred_by.all()
+        data.append({
+            "pk": str(experience.pk),
+            "fields": {
+                "title": experience.title,
+                "description": experience.description,
+                "category_display": experience.get_category_display(),
+                "is_ongoing": experience.is_ongoing,
+                "started_at_display": date_format(experience.started_at),
+                "ended_at_display": date_format(experience.ended_at) if experience.ended_at else "",
+                "star_count": len(starred_users),
+                "is_starred": request.user.is_authenticated and request.user in starred_users,
+                "star_url": experience.get_star_url(),
+                "update_url": experience.get_update_url(),
+                "delete_url": experience.get_delete_url(),
+                "form_values": model_to_dict(experience, fields=ExperienceForm._meta.fields),
+            }
+        })
+    
+        return JsonResponse(data, safe=False)
 
 # show
+# list and search dimuat dgn AJAX
 def show_experience(request):
-    json_response = get_experiences_json(request)
-
-    experiences = serializers.deserialize(
-        "json",
-        json_response.content.decode("utf-8"),
-    )
-    experience_list = [exp.object for exp in experiences]
-    title_query = request.GET.get("title", "").strip()
-
-    for exp in experience_list:
-        exp.edit_form = ExperienceForm(instance=exp)
-
     context = {
-        "experience_list": experience_list,
-        "title_query": title_query,
-        "form": ExperienceForm(),
-        "create_experience_url": reverse("main:create_experience"),
-        "is_editor": is_editor(request.user),
-    }
+            "title_query": request.GET.get("title", "").strip(),
+            "form": ExperienceForm(),
+            "edit_form": ExperienceForm(auto_id="edit_%s"),
+            "create_experience_url": reverse("main:create_experience"),
+            "is_editor": is_editor(request.user),
+        }
     return render(request, "pages/experience.html", context)
 
 # create (superuser only)
@@ -87,6 +93,24 @@ def create_experience(request):
         return redirect("main:show_experience")
 
     return redirect("main:show_experience")
+
+#create dgn AJAX
+def create_experience_ajax(request):
+    if not can_create_or_delete(request.user):
+        return JsonResponse(
+            {"message": "Hanya pemilik portofolio yang dapat menambahkan experience."},
+            status=403,
+        )
+ 
+    form = ExperienceForm(request.POST)
+    if form.is_valid():
+        experience = form.save()
+        return JsonResponse(
+            {"message": "Experience berhasil ditambahkan.", "pk": str(experience.id)},
+            status=201,
+        )
+ 
+    return JsonResponse({"errors": form.errors.get_json_data()}, status=400)
 
 #update
 @login_required(login_url="/login/")
