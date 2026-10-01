@@ -93,9 +93,36 @@ Jujur, saya belum pernah benar-benar memakai XML dan jauh lebih sering ketemu JS
 
 ---
 
+## 📝 Jawaban Pertanyaan Reflektif (Tugas 5)
+
+### 1. Debouncing pada Fitur Pencarian AJAX
+
+- **Pengertian Debouncing:**  
+  Debouncing adalah teknik optimasi untuk menunda eksekusi suatu fungsi sampai tidak ada lagi panggilan baru yang dipicu dalam jeda waktu tertentu (_delay_). Dalam fitur pencarian, debouncing bekerja seperti penahan _timer_. Setiap kali pengguna menekan tombol _keyboard_, _timer_ akan di-reset. Fungsi panggilan AJAX baru benar-benar dieksekusi hanya ketika pengguna berhenti mengetik selama durasi waktu yang telah ditentukan.
+- **Pentingnya Debouncing pada Pencarian AJAX:**  
+  Teknik ini sangat penting untuk mengurangi jumlah _request_ ke _server_. Tanpa debouncing, menginput kata `"laptop"` (6 karakter) akan memicu 6 _HTTP request_ terpisah secara langsung. Dengan debouncing, hanya 1 _request_ yang dikirim setelah pengguna selesai mengetik seluruh kata. Hal ini mencegah _network overhead_, mengurangi beban _database_, dan menghindari _race condition_ akibat balasan _request_ yang saling bersusulan.
+
+### 2. Fungsi `await` pada `fetch()` dan Dampak Jika Tidak Menggunakannya
+
+- **Fungsi `await` pada `fetch()`:**  
+  Fungsi `fetch()` dalam JavaScript pada dasarnya mengembalikan sebuah **Promise** (objek yang mewakili operasi asinkron yang belum selesai). Penggunaan `await` berfungsi untuk menghentikan sementara (_pause_) eksekusi fungsi `async` sampai _Promise_ dari `fetch()` selesai di-resolve, lalu mengekstrak nilai hasilnya (_Response object_) secara langsung.
+- **Dampak Jika Tidak Menggunakan `await`:**  
+  Jika tidak menggunakan `await`, variabel penyimpanan hasil `fetch()` hanya akan berisi objek _Promise_ (`Promise <pending>`), bukan data _response_ dari _server_. Akibatnya, operasi lanjutan seperti `response.json()` akan _fail_ atau _error_. Selain itu, eksekusi kode di bawah baris `fetch()` akan langsung berjalan secara _synchronous_ sebelum _server_ sempat memberikan balasan, sehingga variabel hasil rendering atau pembaruan DOM akan bernilai `undefined` atau kosong.
+
+### 3. Serangan XSS dan Kerentanan pada AJAX/JavaScript vs. Template Django
+
+- **Pengertian Serangan XSS (Cross-Site Scripting):**  
+  XSS adalah serangan di mana penyerang berhasil menyisipkan dan mengeksekusi skrip berbahaya (biasanya JavaScript) ke dalam halaman web yang dilihat oleh pengguna lain. Skrip ini dapat mencuri _cookies_, _session token_, mengambil data sensitif, hingga melakukan tindakan ilegal atas nama pengguna yang terinfeksi.
+- **Kenapa AJAX/JavaScript Lebih Rentan daripada Template Django:**  
+  Template Django menyediakan perlindungan otomatis berupa **HTML Auto-Escaping** saat merender variabel (misal `{{ product.name }}`), sehingga karakter berbahaya seperti `<` atau `>` diubah menjadi teks biasa yang aman. Sebaliknya, saat data balasan _fetch_ dimasukkan via JavaScript—terutama menggunakan `innerHTML = data`—fitur _auto-escaping_ Django sama sekali tidak berlaku karena proses rendering terjadi di sisi _client_ (_browser_), bukan di _template engine_ Django. Jika data dari API mengandung tag `<script>`, _browser_ akan langsung mengesekusinya sebagai HTML/JS executable.
+- **Pencegahan pada JavaScript:**  
+  Untuk mencegahnya, kebersihan dan keamanan kode menjadi tanggung jawab _developer_. Hindari penggunaan `innerHTML` untuk memasukkan data dari pengguna atau API, dan gunakan properti aman seperti `textContent` atau `innerText` yang secara otomatis memperlakukan data sebagai teks murni.
+
+---
+
 ## 🤖 AI Disclosure & Reflection
 
-Dalam proses pengerjaan Tugas 1, 2, 3 dan 4, saya memanfaatkan AI (**Claude**) dan (**Gemini**) sebagai alat bantu. Berikut adalah rincian penggunannya:
+Dalam proses pengerjaan Tugas 1, 2, 3, 4 dan 5, saya memanfaatkan AI (**Claude**) dan (**Gemini**) sebagai alat bantu. Berikut adalah rincian penggunannya:
 
 ### 1. Prompting Strategy
 
@@ -115,10 +142,13 @@ Khusus pada **Tugas 3**, karena kendala manajemen waktu akibat kepadatan jadwal 
   - Pembuatan komponen **modal pop-up** (_add_, _edit_, dan _delete_).
   - Implemetasi dan _styling_ **toolbar search**.
   - Pembuatan komponen **toaster / notification toast**.
+  - Menyediakan referensi logika, debugging, dan penjelasan alur asynchronous (AJAX, fetch(), debouncing, dan manipulasi DOM).
 - **Dikerjakan Mandiri:**
   - Penulisan seluruh struktur HTML dan _layout_ CSS utama.
   - Penyesuaian akhir tampilan visual, skema warna, dan pemilihan aset proyek.
   - Penyesuaian akhir logika, integrasi antar-komponen, dan _refactoring_ gaya tampilan.
+  - Menghubungkan seluruh komponen UI dengan backend Django, mengolah response AJAX, serta memastikan alur E2E (End-to-End) berjalan lancar.
+  - Mengembangkan dan mengadaptasi logika JavaScript hasil rekomendasi AI sesuai dengan kebutuhan spesifik proyek.
 
 ### 3. Analisis Kritis & Perbaikan Manual
 
@@ -127,6 +157,8 @@ AI tidak selalu memberikan hasil yang sesuai dengan kebutuhan proyek dan ekspekt
 Pada Tugas 3, ketika porsi kode yang dibantu AI cukup banyak, saya mendapati beberapa masukan kode mengalami ketidakcocokan (_miss_) dengan struktur dan _style_ yang sudah saya bangun sebelumnya. Proses ini menuntut saya untuk melakukan evaluasi kritis dan perbaikan manual secara menyeluruh. Meskipun membutuhkan usaha ekstra, proses perbaikan mandiri ini justru sangat bermanfaat karena memastikan saya benar-benar memahami logika di balik kode tersebut, bukan sekadar menerimanya secara membabi buta.
 
 Pada Tugas 4, saat menyesuaikan layout dan style pada navbar, saya sempat mengalami kebuntuan dalam memisahkan hierarki visual antara navigasi utama, identitas brand, dan menu account. Setelah sempat mencoba merombak kode secara mandiri dengan hasil yang kurang terstruktur, saya lempar kode ke AI dan menemukan pendekatan desain baru, seperti ide penggunaan badge untuk profil pengguna serta penambahan line breaker sebagai pemisah intuitif pada tampilan mobile. Meskipun menggunakan AI tanpa konfigurasi agent memerlukan penyesuaian ekstra untuk menyelaraskan kode generate dengan struktur utama, pendekatan eksploratif ini sengaja saya pilih agar saya dapat mengevaluasi ide-ide baru secara kritis, memegang kendali penuh atas hasil akhirnya, dan benar-benar memahami logika di balik setiap keputusan desain. Sama seprti di tugas sebelumnya :D
+
+Pada Tugas 5, Sama seperti pada tugas sebelumnya, jika terdapat logika kode atau kendala teknis yang belum saya pahami sepenuhnya, saya berkonsultasi dengan AI untuk mengeksplorasi referensi solusi. Setelah memahami kodenya, saya melakukan penyesuaian (adjustment), refactoring, dan integrasi secara mandiri agar sesuai dengan kebutuhan serta struktur proyek yang saya bangun
 
 ---
 
