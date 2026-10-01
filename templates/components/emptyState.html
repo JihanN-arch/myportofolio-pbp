@@ -1,6 +1,12 @@
-<section class="empty-state">
+{% comment %}
+Params:
+- empty_message: teks yang ditampilkan
+- empty_icon: nama ikon lucide (opsional, default "triangle-alert")
+- state_modifier: class tambahan, misalnya "empty-state--loading" (opsional)
+{% endcomment %}
+<section class="empty-state {{ state_modifier|default:'' }}">
   <div class="state-top">
-    <i data-lucide="triangle-alert" class="state-icon"></i>
+    <i data-lucide="{{ empty_icon|default:'triangle-alert' }}" class="state-icon"></i>
   </div>
   <div class="state-descript">
     <p>{{ empty_message }}</p>

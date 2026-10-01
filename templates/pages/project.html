@@ -38,7 +38,7 @@
 
   <!-- *STATE HALAMAN -->
   <div id="loading" class="hide">
-    {% include "components/emptyState.html" with empty_message="Memuat project..." %}
+    {% include "components/emptyState.html" with empty_message="Memuat project..." empty_icon="loader-circle" state_modifier="empty-state--loading" %}
   </div>
   <div id="error" class="hide">
     {% include "components/emptyState.html" with empty_message="Gagal memuat project. Silakan coba lagi." %}
@@ -72,6 +72,7 @@ const SEARCH_DEBOUNCE_DELAY = 300;
 let projectsAbortController;
 let searchDebounceTimer;
 let projectsById = new Map();
+const LOADING_DELAY = 200;
  
 // *ELEMEN DOM
 const sections = {
@@ -179,12 +180,13 @@ async function fetchProjects(query = "") {
   projectsAbortController = controller;
 
   // klo card dh tampil biarin tetep tampil, state loading pnuh hnya untuk load pertama
+  let loadingTimer;
   const isShowingCards = !sections.grid.classList.contains("hide");
   if (isShowingCards) {
     sections.grid.classList.add("is-loading");
     sections.grid.setAttribute("aria-busy", "true");
   } else {
-    showSection("loading");
+    loadingTimer = setTimeout(() => showSection("loading"), LOADING_DELAY)
   }
 
   try {
@@ -214,6 +216,7 @@ async function fetchProjects(query = "") {
     console.error("Error loading projects:", error);
     showSection("error");
   } finally {
+    clearTimeout(loadingTimer);
     // Hanya request terbaru yang boleh menghapus efek redup,
     // supaya request lama yang dibatalkan tidak menghapusnya terlalu cepat
     if (projectsAbortController === controller) {

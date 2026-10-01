@@ -171,6 +171,24 @@ h1,
   opacity: 0.85;
 }
 
+.empty-state--loading {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.empty-state--loading .state-top {
+  background-color: var(--carbon-black);
+}
+
+.empty-state--loading .state-icon {
+  animation: state-spin 1s linear infinite;
+}
+
+@keyframes state-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /** HEADER */
 /* ![AI-ATTRIBUTION]: Polishing style CSS navbar terhadap auth system dibantu oleh AI (claude)*/
 .site-header {
