@@ -30,9 +30,9 @@
         {% if user.is_authenticated %}
           <span class="nav-user">
             {{ user.username }}
-            {% if user.is_superuser %}
+            {% if user_role == "owner" %}
               <span class="role-badge role-badge--owner">Owner</span>
-            {% elif is_editor %}
+            {% elif user_role == "editor" %}
               <span class="role-badge role-badge--editor">Editor</span>
             {% else %}
               <span class="role-badge role-badge--user">User</span>
