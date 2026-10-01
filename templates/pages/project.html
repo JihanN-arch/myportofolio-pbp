@@ -102,6 +102,13 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
  
+function buildStarButtonContent(isStarred, starCount) {
+  return `
+    <span aria-hidden="true">★</span>
+    ${isStarred ? "Unstar" : "Star"}
+    <span class="star-count">${escapeHtml(starCount)}</span>`;
+}
+
 // Membuat elemen card project
 // *CARD PROJECT (markup mengikuti versi template sebelumnya)
 function buildProjectCard(item) {
@@ -121,14 +128,13 @@ function buildProjectCard(item) {
  
   // Samain dgn toggle_star.html
   const starHtml = `
-    <form method="post" action="${escapeHtml(p.star_url)}" class="star-form">
+    <form method="post" action="${escapeHtml(p.star_url)}" class="star-form"
+          data-pk="${escapeHtml(item.pk)}" data-ajax-url="${escapeHtml(p.star_ajax_url)}">
       {% csrf_token %}
       <button type="submit"
               class="button button-star${p.is_starred ? " is-starred" : ""}"
               title="${p.is_starred ? "Batalkan star" : "Beri star"}">
-        <span aria-hidden="true">★</span>
-        ${p.is_starred ? "Unstar" : "Star"}
-        <span class="star-count">${escapeHtml(p.star_count)}</span>
+        ${buildStarButtonContent(p.is_starred, p.star_count)}
       </button>
     </form>`;
  
@@ -317,9 +323,73 @@ if (projectForm) {
   projectForm.addEventListener("submit", addProject);
 }
  
+// *FITUR EKSTRA: TOGGLE STAR VIA AJAX
+sections.grid.addEventListener("submit", async function (event) {
+  const starForm = event.target.closest(".star-form");
+  if (!starForm) return;
+  event.preventDefault();
+
+  const button = starForm.querySelector("button");
+  button.disabled = true;
+
+  try {
+    const response = await fetch(starForm.dataset.ajaxUrl, {
+      method: "POST",
+      headers: { "X-CSRFToken": getCookie("csrftoken") },
+      body: new FormData(starForm),
+    });
+    const result = await response.json().catch(() => ({}));
+
+    // Gagal jika status bukan 2xx, ATAU respons bukan JSON star yang valid
+    if (!response.ok || typeof result.is_starred !== "boolean") {
+      showToast(
+        "Gagal",
+        result.message || "Silakan login terlebih dahulu untuk memberi star.",
+        "error"
+      );
+      return;
+    }
+
+    // Perbarui tombol langsung tanpa memuat ulang daftar
+    button.classList.toggle("is-starred", result.is_starred);
+    button.title = result.is_starred ? "Batalkan star" : "Beri star";
+    button.innerHTML = buildStarButtonContent(result.is_starred, result.star_count);
+
+    // Samakan data di memori agar konsisten dengan tampilan
+    const item = projectsById.get(starForm.dataset.pk);
+    if (item) {
+      item.fields.is_starred = result.is_starred;
+      item.fields.star_count = result.star_count;
+    }
+
+    showToast(
+      result.is_starred ? "Star diberikan" : "Star dibatalkan",
+      result.message,
+      result.is_starred ? "success" : "normal"
+    );
+  } catch (error) {
+    console.error("Error toggling star:", error);
+    showToast("Gagal", "Tidak dapat terhubung ke server. Silakan coba lagi.", "error");
+  } finally {
+    button.disabled = false;
+  }
+});
+
 // *SEARCH (with debouncing)
+function syncSearchToUrl(query) {
+  const url = new URL(window.location.href);
+  if (query) {
+    url.searchParams.set("title", query);
+  } else {
+    url.searchParams.delete("title");
+  }
+  history.replaceState(null, "", url);
+}
+
 function searchProjects() {
-  fetchProjects(searchInput.value.trim());
+  const query = searchInput.value.trim();
+  syncSearchToUrl(query);
+  fetchProjects(query);
 }
  
 searchInput.addEventListener("input", function () {

@@ -265,6 +265,8 @@ def get_projects_json(request):
                 "update_url": project.get_update_url(),
                 "delete_url": project.get_delete_url(),
                 # nilai field ProjectForm, dipakai untuk mengisi edit modal
+                "star_url": project.get_star_url(),
+                "star_ajax_url": reverse("main:toggle_star_project_ajax", args=[project.pk]),
                 "form_values": model_to_dict(project, fields=ProjectForm._meta.fields),
             }
         })
@@ -335,6 +337,31 @@ def toggle_star_project(request, project_id):
             project.starred_by.add(request.user)
             messages.success(request, f"Kamu memberi star pada '{project.title}'!")
     return redirect("main:show_projects")
+
+@require_POST
+def toggle_star_project_ajax(request, project_id):
+    if not request.user.is_authenticated:
+        return JsonResponse(
+            {"message": "Silakan login terlebih dahulu untuk memberi star."},
+            status=401,
+        )
+
+    project = get_object_or_404(Project, pk=project_id)
+
+    if project.starred_by.filter(pk=request.user.pk).exists():
+        project.starred_by.remove(request.user)
+        is_starred = False
+        message = f"Star pada '{project.title}' dibatalkan."
+    else:
+        project.starred_by.add(request.user)
+        is_starred = True
+        message = f"Kamu memberi star pada '{project.title}'!"
+
+    return JsonResponse({
+        "is_starred": is_starred,
+        "star_count": project.starred_by.count(),
+        "message": message,
+    })
 
 
 #* AUTHENTUKASIH

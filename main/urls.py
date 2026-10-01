@@ -4,7 +4,7 @@ from main.views import (show_main, show_showcase,
                         create_project, create_project_ajax, show_projects, delete_project, get_projects_json, update_project,
                         show_experience, create_experience, create_experience_ajax, update_experience, delete_experience, get_experiences_json,
                         register, login_user, logout_user,
-                        toggle_star_project, toggle_star_experience, toggle_star_experience_ajax)
+                        toggle_star_project, toggle_star_project_ajax, toggle_star_experience, toggle_star_experience_ajax)
 
 app_name = "main"
 
@@ -33,6 +33,8 @@ urlpatterns = [
     path("projects/<uuid:project_id>/delete/",delete_project,name="delete_project"),
     path("projects/<uuid:project_id>/edit/", update_project, name="update_project"),
     path("projects/<uuid:project_id>/star/", toggle_star_project, name="toggle_star_project"),
+    path("projects/<uuid:project_id>/star-ajax/", toggle_star_project_ajax, name="toggle_star_project_ajax"),
+    
     
     # AUTH
     path("register/", register, name="register"),
