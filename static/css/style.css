@@ -585,7 +585,8 @@ h1,
   padding: 0 1.5rem;
 }
 
-.section-container.is-loading {
+.section-container.is-loading,
+.experience-grid.is-loading {
   opacity: 0.5;
   pointer-events: none;
   transition: opacity 0.15s ease;
