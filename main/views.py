@@ -35,8 +35,8 @@ def show_main(request):
 #* EXPERIENCE
 # experience for search
 def get_experiences_json(request):
-    title_query = request.GET.get("title",  "").strip()
-    experiences = Experience.objects.all()
+    title_query = request.GET.get("title", "").strip()
+    experiences = Experience.objects.prefetch_related("starred_by").all()
 
     if title_query:
         experiences = experiences.filter(title__icontains=title_query)
@@ -56,13 +56,14 @@ def get_experiences_json(request):
                 "star_count": len(starred_users),
                 "is_starred": request.user.is_authenticated and request.user in starred_users,
                 "star_url": experience.get_star_url(),
+                "star_ajax_url": reverse("main:toggle_star_experience_ajax", args=[experience.pk]),
                 "update_url": experience.get_update_url(),
                 "delete_url": experience.get_delete_url(),
                 "form_values": model_to_dict(experience, fields=ExperienceForm._meta.fields),
             }
         })
-    
-        return JsonResponse(data, safe=False)
+
+    return JsonResponse(data, safe=False)
 
 # show
 # list and search dimuat dgn AJAX
@@ -95,6 +96,7 @@ def create_experience(request):
     return redirect("main:show_experience")
 
 #create dgn AJAX
+@require_POST
 def create_experience_ajax(request):
     if not can_create_or_delete(request.user):
         return JsonResponse(
@@ -159,6 +161,31 @@ def toggle_star_experience(request, experience_id):
             experience.starred_by.add(request.user)
             messages.success(request, f"Kamu memberi star pada '{experience.title}'!")
     return redirect("main:show_experience")
+
+@require_POST
+def toggle_star_experience_ajax(request, experience_id):
+    if not request.user.is_authenticated:
+        return JsonResponse(
+            {"message": "Silakan login terlebih dahulu untuk memberi star."},
+            status=401,
+        )
+ 
+    experience = get_object_or_404(Experience, pk=experience_id)
+ 
+    if experience.starred_by.filter(pk=request.user.pk).exists():
+        experience.starred_by.remove(request.user)
+        is_starred = False
+        message = f"Star pada '{experience.title}' dibatalkan."
+    else:
+        experience.starred_by.add(request.user)
+        is_starred = True
+        message = f"Kamu memberi star pada '{experience.title}'!"
+ 
+    return JsonResponse({
+        "is_starred": is_starred,
+        "star_count": experience.starred_by.count(),
+        "message": message,
+    })
 
 
 #* EXPERTISE
