@@ -4,6 +4,8 @@ from django.forms import ModelForm, TextInput, Textarea, URLInput, Select, DateI
 from django.utils.html import strip_tags
 from urllib.parse import urlparse
 from main.models import Project, Experience
+from main.utils import to_direct_img_url
+
 import datetime
 
 class ProjectForm(ModelForm):
@@ -82,7 +84,7 @@ class ProjectForm(ModelForm):
         scheme = urlparse(image).scheme
         if scheme and scheme not in ("http", "https"):
             raise ValidationError("Gambar harus berupa path file atau URL http(s)://.")
-        return image
+        return to_direct_img_url(image)
 
     # Untuk membersihkan jika user memasukan range yang diluar akal
     def clean_year(self):
