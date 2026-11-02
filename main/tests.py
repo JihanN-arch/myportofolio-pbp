@@ -19,7 +19,7 @@ class MainTest(TestCase):
         response = self.client.get(reverse("main:show_main"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "index.html")
+        self.assertTemplateUsed(response, "pages/index.html")
         self.assertNotContains(response, self.experience.title)
         self.assertContains(response, f'href="{reverse("main:show_experience")}"')
 
@@ -37,27 +37,31 @@ class MainTest(TestCase):
         response = self.client.get(reverse("main:show_experience"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "experience.html")
-        self.assertContains(response, self.experience.title)
-        self.assertContains(response, self.experience.description)
-        self.assertContains(response, "Part-Time")
-        self.assertContains(response, "Sedang berlangsung")
+        self.assertTemplateUsed(response, "pages/experience.html")
         self.assertContains(response, f'href="{reverse("main:show_main")}"')
+
+        # Daftar experience dimuat lewat AJAX, jadi datanya dicek di endpoint JSON
+        data = self.client.get(reverse("main:get_experiences_json")).json()
+        fields = data[0]["fields"]
+        self.assertEqual(fields["title"], self.experience.title)
+        self.assertEqual(fields["description"], self.experience.description)
+        self.assertEqual(fields["category_display"], "Part-Time")
+        self.assertTrue(fields["is_ongoing"])
 
     def test_empty_experience_page(self):
         Experience.objects.all().delete()
         response = self.client.get(reverse("main:show_experience"))
-
-        self.assertContains(response, "Belum ada experience yang ditambahkan")
+        self.assertContains(response, "Belum ada Experience yang ditambahkan")
+        self.assertEqual(self.client.get(reverse("main:get_experiences_json")).json(), [])
 
     def test_completed_experience(self):
         self.experience.ended_at = timezone.now()
         self.experience.save()
-        response = self.client.get(reverse("main:show_experience"))
+        fields = self.client.get(reverse("main:get_experiences_json")).json()[0]["fields"]
 
         self.assertFalse(self.experience.is_ongoing)
-        self.assertContains(response, "Jan. 1, 2025")
-        self.assertNotContains(response, "Sedang berlangsung")
+        self.assertFalse(fields["is_ongoing"])
+        self.assertEqual(fields["started_at_display"], "Jan. 1, 2025")
 
 # ![AI-ATTRIBUTION]: Kode unit test di-generate oleh AI (Claude) dengan penyesuaian assertions dan mock data secara mandiri
 class ShowMainViewTest(TestCase):
@@ -67,7 +71,7 @@ class ShowMainViewTest(TestCase):
 
     def test_show_main_uses_correct_template(self):
         response = self.client.get(reverse('main:show_main'))
-        self.assertTemplateUsed(response, 'index.html')
+        self.assertTemplateUsed(response, 'pages/index.html')
 
     def test_show_main_displays_profile_data(self):
         response = self.client.get(reverse('main:show_main'))
@@ -90,11 +94,11 @@ class ShowExperienceViewTest(TestCase):
 
     def test_show_experience_uses_correct_template(self):
         response = self.client.get(reverse('main:show_experience'))
-        self.assertTemplateUsed(response, 'experience.html')
+        self.assertTemplateUsed(response, 'pages/experience.html')
 
     def test_show_experience_displays_model_data(self):
-        response = self.client.get(reverse('main:show_experience'))
-        self.assertContains(response, self.experience.title)
+        data = self.client.get(reverse('main:get_experiences_json')).json()
+        self.assertEqual(data[0]["fields"]["title"], self.experience.title)
 
     def test_show_experience_empty_state(self):
         Experience.objects.all().delete()
@@ -124,11 +128,12 @@ class ShowCaseViewTest(TestCase):
 
     def test_show_case_uses_correct_template(self):
         response = self.client.get(reverse('main:show_showcase'))
-        self.assertTemplateUsed(response, 'showcase.html')
+        self.assertTemplateUsed(response, 'pages/showcase.html')
 
     def test_show_case_displays_project_data(self):
-        response = self.client.get(reverse('main:show_showcase'))
-        self.assertContains(response, self.project.title)
+        # Project sudah tidak tampil di showcase; datanya sekarang dari API DRF
+        data = self.client.get(reverse('api:project-list')).json()
+        self.assertEqual(data[0]["title"], self.project.title)
 
     def test_show_case_displays_expertise_data(self):
         response = self.client.get(reverse('main:show_showcase'))
@@ -138,8 +143,8 @@ class ShowCaseViewTest(TestCase):
         Project.objects.all().delete()
         Expertise.objects.all().delete()
         response = self.client.get(reverse('main:show_showcase'))
-        self.assertContains(response, "Belum ada project yang ditambahkan")
         self.assertContains(response, "Belum ada expertise yang ditambahkan")
+        self.assertEqual(self.client.get(reverse('api:project-list')).json(), [])
 
 
 class ProjectModelTest(TestCase):
