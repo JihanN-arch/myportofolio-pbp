@@ -69,7 +69,6 @@ const PLACEHOLDER_ID = "00000000-0000-0000-0000-000000000000";
 const BASE_PROJECTS_ENDPOINT = "{% url 'api:project-list' %}";
 const DETAIL_PROJECT_ENDPOINT = "{% url 'api:project-detail' '00000000-0000-0000-0000-000000000000' %}";
 const STAR_PROJECT_ENDPOINT = "{% url 'api:project-star' '00000000-0000-0000-0000-000000000000' %}";
-const UPDATE_PROJECT_URL = "{% url 'main:update_project' '00000000-0000-0000-0000-000000000000' %}";
 const IS_AUTHENTICATED = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
 const IS_SUPERUSER = "{{ user.is_superuser|yesno:'true,false' }}" === "true";
 const IS_EDITOR = "{{ is_editor|yesno:'true,false' }}" === "true";
@@ -115,8 +114,6 @@ function buildStarButtonContent(isStarred, starCount) {
     <span class="star-count">${escapeHtml(starCount)}</span>`;
 }
 
-// Membuat elemen card project
-// *CARD PROJECT (markup mengikuti versi template sebelumnya)
 function projectEndpoint(pattern, id) {
   return pattern.replace(PLACEHOLDER_ID, id);
 }
@@ -142,6 +139,8 @@ async function writeProject(url, method, payload) {
   return data;
 }
 
+// Membuat elemen card project
+// *CARD PROJECT (markup mengikuti versi template sebelumnya)
 function buildProjectCard(item) {
   const p = item;
  
@@ -262,7 +261,7 @@ function openEditModal(item) {
   if (!modal || !item) return;
  
   const form = modal.querySelector("form");
-  form.action = projectEndpoint(UPDATE_PROJECT_URL, item.id);
+  modal.dataset.projectId = item.id;
   ["title", "image", "github_url", "demo_url", "year", "category"].forEach(name => {
     const field = form.elements[name];
     if (field) field.value = item[name] ?? "";
@@ -328,6 +327,33 @@ if (deleteModal) {
   });
 }
 
+//  EDIT MODAL
+const editModal = document.getElementById("edit-project-modal");
+if (editModal) {
+  editModal.querySelector("form").addEventListener("submit", async function (event) {
+    event.preventDefault();
+    const button = this.querySelector('button[type="submit"]');
+    button.disabled = true;
+    try {
+      const fields = new FormData(this);
+      const payload = Object.fromEntries(
+        ["title", "image", "github_url", "demo_url", "year", "category"]
+          .map(name => [name, fields.get(name)])
+      );
+      if (!payload.year) payload.year = null;
+      await writeProject(projectEndpoint(DETAIL_PROJECT_ENDPOINT, editModal.dataset.projectId), "PATCH", payload);
+      editModal.hidePopover();
+      showToast("Berhasil", "Proyek berhasil diperbarui.", "success");
+      await fetchProjects(searchInput.value.trim());
+    } catch (error) {
+      showToast("Gagal memperbarui proyek", error.message, "error");
+    } finally {
+      button.disabled = false;
+    }
+  });
+}
+
+// ADD PROJET
 async function addProject(event) {
   event.preventDefault();
  

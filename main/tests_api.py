@@ -116,10 +116,20 @@ class ProjectAPITest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data["image"], "https://lh3.googleusercontent.com/d/1AbC-xyz_9")
 
-    def test_staff_and_editor_cannot_manage_tutorial_projects(self):
+    def test_editor_can_update_but_not_create_or_delete(self):
+        self.visitor.groups.add(Group.objects.create(name="Editor"))
+        self.client.force_authenticate(user=self.visitor)
+        response = self.client.patch(self.detail_url, {"title": "Changed"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = self.client.put(self.detail_url, self.payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(self.client.post(self.list_url, self.payload, format="json").status_code, 403)
+        self.assertEqual(self.client.delete(self.detail_url).status_code, 403)
+        self.assertEqual(Project.objects.count(), 1)
+
+    def test_staff_without_editor_group_cannot_update(self):
         self.visitor.is_staff = True
         self.visitor.save()
-        self.visitor.groups.add(Group.objects.create(name="Editor"))
         self.client.force_authenticate(user=self.visitor)
         response = self.client.patch(self.detail_url, {"title": "Changed"}, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

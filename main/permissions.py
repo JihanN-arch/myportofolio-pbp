@@ -16,6 +16,6 @@ class IsPortofolioOwenerOrEditorOrReadOnly(BasePermission):
             return True
         return (
             request.method in ("PUT", "PATCH") 
-            and request.user.groups.filter(name="Editor").exist()
+            and request.user.groups.filter(name="Editor").exists()
             
         )
