@@ -15,7 +15,7 @@ ADMIN_PASSWORD = os.getenv("E2E_ADMIN_PASSWORD")
 if not USER_PASSWORD or not ADMIN_PASSWORD:
     sys.exit("E2E_USER_PASSWORD dan E2E_ADMIN_PASSWORD belum diisi di berkas .env.")
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myportofolio_pbp.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
 from django.contrib.auth.models import User
 

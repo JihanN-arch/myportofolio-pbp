@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-from myportofolio_pbp.views import landing_page
+from config.views import landing_page
 
 urlpatterns = [
     path('admin/', admin.site.urls),

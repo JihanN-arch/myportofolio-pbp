@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -58,7 +59,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'myportofolio_pbp.urls'
+ROOT_URLCONF = 'config.urls'
 
 CSRF_TRUSTED_ORIGINS = ["https://jihan-nabiilah-myportofoliopbp.pws.cs.ui.ac.id"]
 
@@ -81,7 +82,7 @@ TEMPLATES = [
 
 WHITENOISE_USE_FINDERS = True
 
-WSGI_APPLICATION = 'myportofolio_pbp.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
