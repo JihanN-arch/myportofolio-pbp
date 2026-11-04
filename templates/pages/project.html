@@ -136,7 +136,11 @@ async function writeProject(url, method, payload) {
   });
   if (response.status === 204) return null;
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(apiErrorMessage(data, response.status));
+  if (!response.ok) {
+    const error = new Error(apiErrorMessage(data, response.status));
+    error.fieldErrors = data; 
+    throw error;
+  }
   return data;
 }
 
@@ -262,6 +266,7 @@ function openEditModal(item) {
   if (!modal || !item) return;
  
   const form = modal.querySelector("form");
+  clearFieldErrors(form);
   modal.dataset.projectId = item.id;
   ["title", "image", "github_url", "demo_url", "year", "category"].forEach(name => {
     const field = form.elements[name];
@@ -331,6 +336,7 @@ if (deleteModal) {
 //  EDIT MODAL
 const editModal = document.getElementById("edit-project-modal");
 if (editModal) {
+  clearErrorOnInput(editModal.querySelector("form"));
   editModal.querySelector("form").addEventListener("submit", async function (event) {
     event.preventDefault();
     const button = this.querySelector('button[type="submit"]');
@@ -342,11 +348,13 @@ if (editModal) {
           .map(name => [name, fields.get(name)])
       );
       if (!payload.year) payload.year = null;
+      clearFieldErrors(this);
       await writeProject(projectEndpoint(DETAIL_PROJECT_ENDPOINT, editModal.dataset.projectId), "PATCH", payload);
       editModal.hidePopover();
       showToast("Berhasil", "Proyek berhasil diperbarui.", "success");
       await fetchProjects(searchInput.value.trim());
     } catch (error) {
+      showFieldErrors(this, error.fieldErrors);   
       showToast("Gagal memperbarui proyek", error.message, "error");
     } finally {
       button.disabled = false;
@@ -368,12 +376,14 @@ async function addProject(event) {
         .map(name => [name, fields.get(name)])
     );
     if (!payload.year) payload.year = null;
+    clearFieldErrors(projectForm);   
     await writeProject(BASE_PROJECTS_ENDPOINT, "POST", payload);
     projectForm.reset();
     closeProjectModal();
     showToast("Berhasil", "Proyek baru berhasil ditambahkan!", "success");
     await fetchProjects(searchInput.value.trim());
   } catch (error) {
+    showFieldErrors(projectForm, error.fieldErrors);
     showToast("Gagal menambahkan proyek", error.message, "error");
   } finally {
     submitButton.disabled = false;
@@ -381,6 +391,7 @@ async function addProject(event) {
 }
  
 if (projectForm) {
+  clearErrorOnInput(projectForm);   
   projectForm.addEventListener("submit", addProject);
 }
  
