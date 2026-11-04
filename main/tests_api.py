@@ -156,6 +156,16 @@ class ProjectAPITest(APITestCase):
         token = client.cookies["csrftoken"].value
         response = client.post(self.list_url, self.payload, format="json", HTTP_X_CSRFTOKEN=token)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        
+    def test_list_query_count_does_not_grow_with_data(self):
+        """Daftar Project tetap 2 query berkat prefetch_related("starred_by"), berapa pun jumlahnya."""
+        for i in range(20):
+            project = Project.objects.create(title=f"Project {i}", year=2025)
+            project.starred_by.add(self.owner, self.visitor)
+        self.client.force_authenticate(user=self.visitor)
+        with self.assertNumQueries(2):
+            response = self.client.get(self.list_url)
+        self.assertEqual(len(response.data), 21)
 
 # TEST EXPERIENCE
 class ExperienceAPITest(APITestCase):
@@ -346,3 +356,18 @@ class ExperienceAPITest(APITestCase):
             self.detail_url, {"title": "Dengan CSRF"}, format="json", HTTP_X_CSRFTOKEN=token,
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+            # --- Efisiensi query ---
+    def test_list_query_count_does_not_grow_with_data(self):
+        """
+        prefetch_related("starred_by") membuat jumlah query daftar tetap 2
+        (1 untuk experience, 1 untuk semua relasi star), berapa pun jumlah datanya.
+        Tanpa prefetch, setiap kartu akan menambah query sendiri (masalah N+1).
+        """
+        for i in range(20):
+            experience = Experience.objects.create(title=f"Exp {i}", started_at=datetime.date(2026, 1, 1))
+            experience.starred_by.add(self.visitor, self.editor)
+        self.client.force_authenticate(user=self.visitor)
+        with self.assertNumQueries(2):
+            response = self.client.get(self.list_url)
+        self.assertEqual(len(response.data), 21)
