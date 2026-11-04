@@ -8,13 +8,30 @@ from main.models import Experience, Project
 from main.utils import to_direct_img_url
 
 
-# TUTORIAL 7
-# PROJECT
-class ProjectSerializer(serializers.ModelSerializer):
-    category_display = serializers.CharField(source="get_category_display", read_only=True)
+# STAR SERIALIZER
+class StarFieldsMixin(serializers.Serializer):
     star_count = serializers.SerializerMethodField()
     is_starred = serializers.SerializerMethodField()
     starred_by_names = serializers.SerializerMethodField()
+    
+    def get_star_count(self, obj):
+        return obj.starred_by.count()
+
+    def get_is_starred(self, obj):
+        """True jika akun yang sedang login sudah memberi star. Butuh context["request"]."""
+        request = self.context.get("request")
+        if request is None or not request.user.is_authenticated:
+            return False
+        return request.user in obj.starred_by.all()
+    
+    def get_starred_by_names(self, obj):
+        """Username pemberi star (tanpa email atau data akun lain)."""
+        return ", ".join(user.username for user in obj.starred_by.all())
+
+# TUTORIAL 7
+# PROJECT
+class ProjectSerializer(StarFieldsMixin, serializers.ModelSerializer):
+    category_display = serializers.CharField(source="get_category_display", read_only=True)
     
     class Meta:
         model = Project
@@ -24,6 +41,11 @@ class ProjectSerializer(serializers.ModelSerializer):
             "star_count", "is_starred", "starred_by_names",
         ]
         read_only_fields = ["id"]
+        
+        extra_kwargs = {
+            "title": {"error_messages": {"blank": "Nama proyek tidak boleh kosong."}},
+            "year": {"error_messages": {"invalid": "Tahun harus berupa angka."}},
+        }
         
     def validate_title(self, value):
         value = strip_tags(value).strip()
@@ -48,28 +70,14 @@ class ProjectSerializer(serializers.ModelSerializer):
         if value is not None and not (2000 <= value <= current_year):
             raise serializers.ValidationError(f"Tahun harus antara 2000 dan {current_year}.")
         return value
-    
-    def get_star_count(self, obj):
-        return obj.starred_by.count()
-    
-    def get_is_starred(self, obj):
-        request = self.context.get("request")
-        if request is None or not request.user.is_authenticated:
-            return False
-        return request.user in obj.starred_by.all()
 
-    def get_starred_by_names(self, obj):
-        return ", ".join(user.username for user in obj.starred_by.all())
     
 
 # EXPERIENCE
-class ExperienceSerializer(serializers.ModelSerializer):
+class ExperienceSerializer(StarFieldsMixin, serializers.ModelSerializer):
     # id, title, description, category, starred_at, endded_at, starred_by
     category_display = serializers.CharField(source="get_category_display", read_only=True)
-    is_ongoing = serializers.BooleanField(read_only=True)
-    star_count = serializers.SerializerMethodField()
-    is_starred = serializers.SerializerMethodField()
-    starred_by_names = serializers.SerializerMethodField()  
+    is_ongoing = serializers.BooleanField(read_only=True) 
     class Meta:
         model = Experience
         
@@ -81,6 +89,11 @@ class ExperienceSerializer(serializers.ModelSerializer):
         read_only_fields = [
             "id"
         ]
+        
+        extra_kwargs = {
+            "title": {"error_messages": {"blank": "Nama experience tidak boleh kosong."}},
+            "started_at": {"error_messages": {"invalid": "Format tanggal mulai tidak valid."}},
+        }
         
         
     def validate_title(self, value):
@@ -102,15 +115,3 @@ class ExperienceSerializer(serializers.ModelSerializer):
             )   
             
         return attrs 
-    
-    def get_star_count(self, obj):
-        return obj.starred_by.count()
-        
-    def get_is_starred(self, obj):
-        request = self.context.get("request")
-        if request is None or not request.user.is_authenticated:
-            return False
-        return request.user in obj.starred_by.all()
-    
-    def get_starred_by_names(self, obj):
-        return ", ".join(user.username for user in obj.starred_by.all())
