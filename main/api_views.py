@@ -10,12 +10,14 @@ from rest_framework.response import Response
 from main.models import Project, Experience
 from main.permissions import IsPortofolioOwnerOrReadOnly, IsPortofolioOwenerOrEditorOrReadOnly
 from main.serializers import ProjectSerializer, ExperienceSerializer
+from main.utils import toggle_star
 
 
 @api_view(["GET", "HEAD", "POST"])
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsPortofolioOwenerOrEditorOrReadOnly])
 def project_list(request):
+    """GET: daftar project (opsional ?title= untuk mencari). POST: tambah project (pemilik saja)."""
     if request.method in ("GET", "HEAD"):
         projects = Project.objects.prefetch_related("starred_by").order_by("title", "id")
         title = request.query_params.get("title", "").strip()
@@ -32,10 +34,12 @@ def project_list(request):
     serializer.save()
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+
 @api_view(["GET", "HEAD", "PUT", "PATCH", "DELETE"])
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsPortofolioOwenerOrEditorOrReadOnly])   
 def project_detail(request, project_id):
+    """GET: detail. PUT/PATCH: ubah (pemilik & Editor). DELETE: hapus (pemilik saja)."""
     project = get_object_or_404(
         Project.objects.prefetch_related("starred_by"), pk=project_id,
     )
@@ -61,11 +65,9 @@ def project_detail(request, project_id):
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def project_star(request, project_id):
+    """Toggle star project untuk akun yang sedang login (selalu request.user)."""
     project = get_object_or_404(Project, pk=project_id)
-    if project.starred_by.filter(pk=request.user.pk).exists():
-        project.starred_by.remove(request.user)
-    else:
-        project.starred_by.add(request.user)
+    toggle_star(project, request.user)
     serializer = ProjectSerializer(project, context={"request": request})
     return Response(serializer.data)
 
@@ -94,6 +96,7 @@ def experience_list(request):
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsPortofolioOwenerOrEditorOrReadOnly])
 def experience_detail(request, experience_id):
+    """GET: detail. PUT/PATCH: ubah (pemilik & Editor). DELETE: hapus (pemilik saja)."""
     experience = get_object_or_404(Experience.objects.prefetch_related("starred_by"), pk=experience_id)
     
     # get
@@ -115,16 +118,13 @@ def experience_detail(request, experience_id):
     serializer.save()
     return Response(serializer.data)
 
+
 @api_view(["POST"])
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def experience_star(request, experience_id):
+    """Toggle star experience untuk akun yang sedang login (selalu request.user)."""
     experience = get_object_or_404(Experience, pk=experience_id)
-    
-    if experience.starred_by.filter(pk=request.user.pk).exists():
-        experience.starred_by.remove(request.user)
-    else:
-        experience.starred_by.add(request.user)
+    toggle_star(experience, request.user)
     serializer = ExperienceSerializer(experience, context={"request": request})
-    return Response(serializer.data) 
-    
+    return Response(serializer.data)

@@ -16,4 +16,12 @@ def to_direct_img_url(value):
     if not file_id:
         return value
     
-    return f"https://lh3.googleusercontent.com/d/{file_id}"    
+    return f"https://lh3.googleusercontent.com/d/{file_id}"   
+
+# toggle star remmove or add
+def toggle_star(obj, user):
+    if obj.starred_by.filter(pk=user.pk).exists():
+        obj.starred_by.remove(user)
+        return False
+    obj.starred_by.add(user)
+    return True
