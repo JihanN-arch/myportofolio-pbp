@@ -11,6 +11,8 @@ from main.models import Experience, Project
 # Test API untuk Project (Tutorial 07), disesuaikan dengan field model Project:
 # title, image, github_url, demo_url, year, category.
 
+#! AI Attribution:
+#! Penulisan test experience dan penambahan unit test pada file ini dibantu oleh Claude AI.
 class ProjectAPITest(APITestCase):
     def setUp(self):
         self.owner = User.objects.create_superuser(

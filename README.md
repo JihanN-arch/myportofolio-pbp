@@ -120,9 +120,47 @@ Jujur, saya belum pernah benar-benar memakai XML dan jauh lebih sering ketemu JS
 
 ---
 
+## 📝 Jawaban Pertanyaan Reflektif (Tugas 5)
+
+### 1. REST, RESTful, serta Perbedaan PUT vs PATCH
+
+- **Pengertian REST:**  
+  REST itu kayak jembatan yang menjembatani _client_ dan _server_ buat proses transaksi data dan bikin proses CRUD jadi mudah.
+- **Kenapa Balikin JSON Doang Belum Cukup Disebut RESTful:**  
+  Karena JSON itu cuma format data (bungkusnya doang). Supaya beneran RESTful, API harus memenuhi prinsip arsitektur REST, salah satunya **stateless** (server ga nyimpen sesi _client_) dan menggunakan standar **HTTP methods** (`GET`, `POST`, `PUT`, `DELETE`) dengan benar sesuai fungsinya, serta memanfaatkan _hypermedia/HATEOAS_ kalau mau mantapss. Jadi kalau cuma ngelempar data JSON tapi strukturnya berantakan dan ga pakai standar HTTP yang bener, ya belum bisa disebut RESTful. Kek mau diapain datanya?
+- **`PATCH`:**  
+  Digunakan buat **mengubah sebagian data aja** (_partial update_). Misalnya kamu punya data model barang (nama, harga, stok), terus kamu cuma mau ganti nama barangnya doang tanpa peduli _field_ lain, nah ini pakai `PATCH`.
+- **`PUT`:**  
+  Digunakan buat **mengganti seluruh data** secara penuh (_full update_). Kalau kamu pakai `PUT`, biasanya kamu harus ngirim semua _field_ yang ada di model itu; kalau ada yang ketinggalan, data lamanya bisa ke-reset atau kosong.
+
+### 2. Peran Serializer di Django REST Framework (DRF)
+
+- **Peran Serializer:**  
+  Serializer tuh kayak penerjemah (misalnya dari bahasa Indonesia ke Inggris di otak). Kayak kalo kita nermima surat berbahasa Inggris, di otak kita menerjemahkan surat itu ke bahasa Indonesia.
+- **Lebih Praktis daripada Rakit _Dictionary_ Manual:**  
+  Bayangin kalau kita rakit manual pake `dict` dan `JsonResponse` kaya di Tutorial 05 bakal ribet dan capek. MIsal kalau modelnya punya 10 _field_ atau relasi ke tabel lain, kita harus nulis kodenya satu-satu secara manual dan rawan _typo_.
+- **Otomasi Validasi & Konversi:**  
+  Serializer bisa otomatis ngecek apakah data dari _client_ valid (misalnya tipe data sesuai, _email_ valid, _field_ wajib keisi) dan gampang banget nge-_convert_ _complex data_ (kayak _queryset_ Django) jadi format JSON (atau sebaliknya, dari JSON ke objek Python/_database_).
+
+### 3. Autentikasi vs Otorisasi & Kenapa Cuma Sembunyiin Tombol Ga Cukup
+
+- **Autentikasi vs Otorisasi:**  
+  Autentikasi itu buat ngecek **siapa kamu** (kenal apa enggak, misal udah _login_ atau belum), kalau otorisasi itu ngecek **apa yang boleh kamu lakuin** (hak aksesnya sampe mana, misal cuma _admin_ yang boleh ngehapus data).
+- **Kenapa Harus Pakai _Permission Class_ di Server:**  
+  Bisa aja kalau _user_ ngotak-ngatik URL atau mainin API-nya langsung (misal pake Postman atau _inspect element_), mereka tetep bisa nge-_hit_ _endpoint_ server. Kalau di _front-end_ tombolnya doang yang diumpetin tapi di _back-end_ ga dipasang _permission_, ya data atau _endpoint_-nya bakal jebol karena server nerima _request_ begitu aja tanpa ngecek ulang siapa yang nembak.
+
+### 4. Token CSRF di SessionAuthentication & `force_authenticate`
+
+- **Kenapa _Request_ yang Mengubah Data Tetap Butuh Token CSRF:**  
+  Karena `SessionAuthentication` itu nyimpen sesi _login_ lewat _cookie_ browser. Kalau ada situs jahat yang nge-_trigger_ _request_ dari browser kamu tanpa sepengetahuanmu (serangan CSRF), browser bakal otomatis nyertain _cookie_ sesi kamu ke server. Makanya butuh **token CSRF** sebagai pengaman tambahan biar server tahu kalau _request_ itu bener-bener dikirim secara sadar dari _client_ asli, bukan dari situs lain yang nyolong jalur.
+- **Kenapa _Test_ dengan `force_authenticate` Ga Cukup:**  
+  Karena `force_authenticate` itu cara instan buat nembak _endpoint_ di _unit test_ DRF dengan cara **_by-pass_ (ngelewatin)** proses autentikasi normal dan mekanisme pengecekan _cookie_ session/CSRF. Jadi, meskipun _test_ kamu lolos pakai `force_authenticate`, itu _gak ngetes sama sekali_ apakah sistem perlindungan CSRF bener-bener aktif menangkal _request_ ilegal dari luar. Buat ngetes CSRF, biasanya kita harus pake `APIClient` biasa tanpa _force_ atau manggil _endpoint_ dengan _cookie_ session beneran.
+
+---
+
 ## 🤖 AI Disclosure & Reflection
 
-Dalam proses pengerjaan Tugas 1, 2, 3, 4 dan 5, saya memanfaatkan AI (**Claude**) dan (**Gemini**) sebagai alat bantu. Berikut adalah rincian penggunannya:
+Dalam proses pengerjaan Tugas 1, 2, 3, 4, 5, dan 6 saya memanfaatkan AI (**Claude**) dan (**Gemini**) sebagai alat bantu. Berikut adalah rincian penggunannya:
 
 ### 1. Prompting Strategy
 
@@ -143,12 +181,16 @@ Khusus pada **Tugas 3**, karena kendala manajemen waktu akibat kepadatan jadwal 
   - Implemetasi dan _styling_ **toolbar search**.
   - Pembuatan komponen **toaster / notification toast**.
   - Menyediakan referensi logika, debugging, dan penjelasan alur asynchronous (AJAX, fetch(), debouncing, dan manipulasi DOM).
+  - Debugging dan merapihkan logika kode JS, serializer dan views untuk API.
+  - Parafrase jawaban refleksi agar kalimatnya lebih enak dibaca.
+
 - **Dikerjakan Mandiri:**
   - Penulisan seluruh struktur HTML dan _layout_ CSS utama.
   - Penyesuaian akhir tampilan visual, skema warna, dan pemilihan aset proyek.
   - Penyesuaian akhir logika, integrasi antar-komponen, dan _refactoring_ gaya tampilan.
   - Menghubungkan seluruh komponen UI dengan backend Django, mengolah response AJAX, serta memastikan alur E2E (End-to-End) berjalan lancar.
   - Mengembangkan dan mengadaptasi logika JavaScript hasil rekomendasi AI sesuai dengan kebutuhan spesifik proyek.
+  - views dan serializer API
 
 ### 3. Analisis Kritis & Perbaikan Manual
 
@@ -159,6 +201,8 @@ Pada Tugas 3, ketika porsi kode yang dibantu AI cukup banyak, saya mendapati beb
 Pada Tugas 4, saat menyesuaikan layout dan style pada navbar, saya sempat mengalami kebuntuan dalam memisahkan hierarki visual antara navigasi utama, identitas brand, dan menu account. Setelah sempat mencoba merombak kode secara mandiri dengan hasil yang kurang terstruktur, saya lempar kode ke AI dan menemukan pendekatan desain baru, seperti ide penggunaan badge untuk profil pengguna serta penambahan line breaker sebagai pemisah intuitif pada tampilan mobile. Meskipun menggunakan AI tanpa konfigurasi agent memerlukan penyesuaian ekstra untuk menyelaraskan kode generate dengan struktur utama, pendekatan eksploratif ini sengaja saya pilih agar saya dapat mengevaluasi ide-ide baru secara kritis, memegang kendali penuh atas hasil akhirnya, dan benar-benar memahami logika di balik setiap keputusan desain. Sama seprti di tugas sebelumnya :D
 
 Pada Tugas 5, Sama seperti pada tugas sebelumnya, jika terdapat logika kode atau kendala teknis yang belum saya pahami sepenuhnya, saya berkonsultasi dengan AI untuk mengeksplorasi referensi solusi. Setelah memahami kodenya, saya melakukan penyesuaian (adjustment), refactoring, dan integrasi secara mandiri agar sesuai dengan kebutuhan serta struktur proyek yang saya bangun
+
+Pada Tugas 6 ini, jika mengalami kendala teknis, saya berkonsultasi dengan AI. Saya menggunakan AI untuk memahami logika kode, menanyakan sintaks, serta mengonfirmasi proses alur data dan logika program saya. Biasanya, saya menulis kode terlebih dahulu, lalu menanyakannya kepada AI untuk mengecek barangkali ada penulisan yang salah atau kode yang kurang tepat, mengingat saya jujur sering banget typo. Selain itu, saya juga menggunakan AI untuk merapikan jawaban dari tugas refleksi dan melakukan parafrase agar kalimatnya lebih enak dibaca.
 
 ---
 
