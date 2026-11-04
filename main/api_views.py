@@ -14,7 +14,7 @@ from main.serializers import ProjectSerializer, ExperienceSerializer
 
 @api_view(["GET", "HEAD", "POST"])
 @authentication_classes([SessionAuthentication])
-@permission_classes([IsPortofolioOwnerOrReadOnly])
+@permission_classes([IsPortofolioOwenerOrEditorOrReadOnly])
 def project_list(request):
     if request.method in ("GET", "HEAD"):
         projects = Project.objects.prefetch_related("starred_by").order_by("title", "id")
@@ -73,7 +73,7 @@ def project_star(request, project_id):
 # EXPERIENCE
 @api_view(["GET", "HEAD", "POST"])
 @authentication_classes([SessionAuthentication])
-@permission_classes([IsPortofolioOwnerOrReadOnly])
+@permission_classes([IsPortofolioOwenerOrEditorOrReadOnly])
 def experience_list(request):
     """GET: daftar experience (opsional ?title= untuk mencari). POST: tambah experience (pemilik saja)."""
     if request.method in ("GET", "HEAD"):
@@ -94,7 +94,7 @@ def experience_list(request):
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsPortofolioOwenerOrEditorOrReadOnly])
 def experience_detail(request, experience_id):
-    experience = get_object_or_404(Experience.objects.prefetch_related("starred_by"), pk=experience_id,)
+    experience = get_object_or_404(Experience.objects.prefetch_related("starred_by"), pk=experience_id)
     
     # get
     if request.method in ("GET", "HEAD"):
@@ -119,7 +119,6 @@ def experience_detail(request, experience_id):
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def experience_star(request, experience_id):
-    # tombol klik add
     experience = get_object_or_404(Experience, pk=experience_id)
     
     if experience.starred_by.filter(pk=request.user.pk).exists():
