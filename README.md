@@ -120,41 +120,44 @@ Jujur, saya belum pernah benar-benar memakai XML dan jauh lebih sering ketemu JS
 
 ---
 
-## 📝 Jawaban Pertanyaan Reflektif (Tugas 5)
+## 📝 Jawaban Pertanyaan Reflektif (Tugas 6)
 
 ### 1. REST, RESTful, serta Perbedaan PUT vs PATCH
 
 - **Pengertian REST:**  
-  REST itu kayak jembatan yang menjembatani _client_ dan _server_ buat proses transaksi data dan bikin proses CRUD jadi mudah.
+  REST (_Representational State Transfer_) itu **gaya arsitektur** atau aturan main buat ngerancang API, jadi bukan _library_ atau format data. API sendiri yang jadi jembatan antara _client_ dan _server_ buat transaksi data (CRUD), sedangkan REST ngatur _gimana_ jembatan itu dirancang. Dua ide utamanya:
+  - **Data diperlakukan sebagai _resource_ yang ditunjuk URL.** Contoh di proyekku: `/api/v1/experiences/` buat kumpulan experience, dan `/api/v1/experiences/<id>/` buat satu experience.
+  - **HTTP method yang nyatain tindakannya**, jadi tindakan ga perlu ditulis di URL. Dulu di Tugas 5 aku pakai `/projects/add-ajax/`, sekarang cukup `POST /api/v1/projects/`.
 - **Kenapa Balikin JSON Doang Belum Cukup Disebut RESTful:**  
-  Karena JSON itu cuma format data (bungkusnya doang). Supaya beneran RESTful, API harus memenuhi prinsip arsitektur REST, salah satunya **stateless** (server ga nyimpen sesi _client_) dan menggunakan standar **HTTP methods** (`GET`, `POST`, `PUT`, `DELETE`) dengan benar sesuai fungsinya, serta memanfaatkan _hypermedia/HATEOAS_ kalau mau mantapss. Jadi kalau cuma ngelempar data JSON tapi strukturnya berantakan dan ga pakai standar HTTP yang bener, ya belum bisa disebut RESTful. Kek mau diapain datanya?
+  Karena JSON itu cuma format data (bungkusnya doang). Supaya beneran RESTful, API harus memenuhi prinsip arsitektur REST: URL-nya nunjuk _resource_, pakai standar **HTTP methods** (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`) dengan benar sesuai fungsinya, dan **stateless** (tiap _request_ bawa semua info yang dibutuhin, server ga perlu inget _request_ sebelumnya). Jadi kalau cuma ngelempar data JSON tapi URL-nya berisi aksi (kayak `/add-ajax/`) atau semua tindakan lewat `POST`, ya belum bisa disebut RESTful.  
+  Catatan: API-ku sebenarnya ga 100% stateless, karena `SessionAuthentication` nyimpen sesi _login_ di server. Tapi ini pilihan yang wajar buat AJAX yang jalan di website yang sama, dan DRF sendiri ga maksa satu gaya desain.
 - **`PATCH`:**  
-  Digunakan buat **mengubah sebagian data aja** (_partial update_). Misalnya kamu punya data model barang (nama, harga, stok), terus kamu cuma mau ganti nama barangnya doang tanpa peduli _field_ lain, nah ini pakai `PATCH`.
+  Digunakan buat **mengubah sebagian data aja** (_partial update_). Cukup kirim _field_ yang mau diubah, _field_ lain tetap. Contoh di proyekku: modal edit Experience pakai `PATCH`, jadi kalau cuma ganti judul, data lain ga ikut berubah. Di view-nya ada `partial=request.method == "PATCH"` yang ngebedain ini.
 - **`PUT`:**  
-  Digunakan buat **mengganti seluruh data** secara penuh (_full update_). Kalau kamu pakai `PUT`, biasanya kamu harus ngirim semua _field_ yang ada di model itu; kalau ada yang ketinggalan, data lamanya bisa ke-reset atau kosong.
+  Digunakan buat **mengganti seluruh data** secara penuh (_full update_), jadi semua _field_ wajib harus dikirim. Di DRF, kalau ada _field_ wajib yang ketinggalan, _request_-nya **ditolak dengan 400**, bukan datanya jadi kosong. Ini juga aku buktiin di _test_: `PUT` yang cuma bawa `{"year": 2024}` tanpa `title` hasilnya 400.
 
 ### 2. Peran Serializer di Django REST Framework (DRF)
 
 - **Peran Serializer:**  
-  Serializer tuh kayak penerjemah (misalnya dari bahasa Indonesia ke Inggris di otak). Kayak kalo kita nermima surat berbahasa Inggris, di otak kita menerjemahkan surat itu ke bahasa Indonesia.
+  Serializer tuh kayak penerjemah (misalnya dari bahasa Indonesia ke Inggris di otak). Kayak kalo kita nerima surat berbahasa Inggris, di otak kita menerjemahkan surat itu ke bahasa Indonesia. Kerjanya **dua arah**: pas `GET`, objek model diubah jadi data yang bisa dikirim sebagai JSON; pas `POST`/`PATCH`, data JSON dari _client_ dicek dulu lalu diubah jadi data yang siap disimpan.
 - **Lebih Praktis daripada Rakit _Dictionary_ Manual:**  
-  Bayangin kalau kita rakit manual pake `dict` dan `JsonResponse` kaya di Tutorial 05 bakal ribet dan capek. MIsal kalau modelnya punya 10 _field_ atau relasi ke tabel lain, kita harus nulis kodenya satu-satu secara manual dan rawan _typo_.
+  Bayangin kalau kita rakit manual pake `dict` dan `JsonResponse` kaya di Tutorial 05 bakal ribet dan capek. Di Tugas 5, `get_experiences_json` aku rakit pakai _loop_ dan `data.append({...})` satu per satu, dan input dibaca lewat `request.POST` + `ExperienceForm`. Misal kalau modelnya punya 10 _field_ atau relasi ke tabel lain, kita harus nulis kodenya satu-satu secara manual dan rawan _typo_. Sekarang cukup `ExperienceSerializer(...)`, dan input dibaca lewat `request.data` yang bisa nerima JSON.
 - **Otomasi Validasi & Konversi:**  
-  Serializer bisa otomatis ngecek apakah data dari _client_ valid (misalnya tipe data sesuai, _email_ valid, _field_ wajib keisi) dan gampang banget nge-_convert_ _complex data_ (kayak _queryset_ Django) jadi format JSON (atau sebaliknya, dari JSON ke objek Python/_database_).
+  Serializer bisa otomatis ngecek apakah data dari _client_ valid (misalnya tipe data sesuai, tanggal akhir ga boleh sebelum tanggal mulai, _field_ wajib keisi). Validasinya terpusat di `validate_<field>` dan `validate()`, terus `is_valid(raise_exception=True)` otomatis balikin 400 lengkap sama error per _field_. Selain itu, daftar `fields` yang ditulis eksplisit bikin data sensitif (kayak email) ga ikut keluar, dan _field_ `read_only` (kayak `star_count`) ga bisa diisi dari luar.
 
 ### 3. Autentikasi vs Otorisasi & Kenapa Cuma Sembunyiin Tombol Ga Cukup
 
 - **Autentikasi vs Otorisasi:**  
-  Autentikasi itu buat ngecek **siapa kamu** (kenal apa enggak, misal udah _login_ atau belum), kalau otorisasi itu ngecek **apa yang boleh kamu lakuin** (hak aksesnya sampe mana, misal cuma _admin_ yang boleh ngehapus data).
+  Autentikasi itu buat ngecek **siapa kamu** (kenal apa enggak, misal udah _login_ atau belum), kalau otorisasi itu ngecek **apa yang boleh kamu lakuin** (hak aksesnya sampe mana, misal cuma pemilik/_superuser_ yang boleh ngehapus data). Di DRF keduanya dipisah: _authentication class_ (`SessionAuthentication`) baca _cookie_ sesi lalu ngisi `request.user`, terus _permission class_ (`IsPortfolioOwnerOrEditorOrReadOnly`) yang mutusin _request_ itu boleh lanjut atau ditolak 403.
 - **Kenapa Harus Pakai _Permission Class_ di Server:**  
-  Bisa aja kalau _user_ ngotak-ngatik URL atau mainin API-nya langsung (misal pake Postman atau _inspect element_), mereka tetep bisa nge-_hit_ _endpoint_ server. Kalau di _front-end_ tombolnya doang yang diumpetin tapi di _back-end_ ga dipasang _permission_, ya data atau _endpoint_-nya bakal jebol karena server nerima _request_ begitu aja tanpa ngecek ulang siapa yang nembak.
+  Bisa aja kalau _user_ ngotak-ngatik URL atau mainin API-nya langsung (misal pake Postman atau _inspect element_), mereka tetep bisa nge-_hit_ _endpoint_ server. Kalau di _front-end_ tombolnya doang yang diumpetin tapi di _back-end_ ga dipasang _permission_, ya data atau _endpoint_-nya bakal jebol karena server nerima _request_ begitu aja tanpa ngecek ulang siapa yang nembak. Ini aku buktiin di `test_guest_and_visitor_cannot_write`: _request_ dikirim langsung ke API tanpa lewat tombol, dan tetep ditolak 403 dengan data di _database_ ga berubah.
 
 ### 4. Token CSRF di SessionAuthentication & `force_authenticate`
 
 - **Kenapa _Request_ yang Mengubah Data Tetap Butuh Token CSRF:**  
-  Karena `SessionAuthentication` itu nyimpen sesi _login_ lewat _cookie_ browser. Kalau ada situs jahat yang nge-_trigger_ _request_ dari browser kamu tanpa sepengetahuanmu (serangan CSRF), browser bakal otomatis nyertain _cookie_ sesi kamu ke server. Makanya butuh **token CSRF** sebagai pengaman tambahan biar server tahu kalau _request_ itu bener-bener dikirim secara sadar dari _client_ asli, bukan dari situs lain yang nyolong jalur.
+  Karena `SessionAuthentication` itu nyimpen sesi _login_ lewat _cookie_ browser. Kalau ada situs jahat yang nge-_trigger_ _request_ dari browser kamu tanpa sepengetahuanmu (serangan CSRF), browser bakal otomatis nyertain _cookie_ sesi kamu ke server. Makanya butuh **token CSRF** sebagai pengaman tambahan biar server tahu kalau _request_ itu bener-bener dikirim secara sadar dari _client_ asli, bukan dari situs lain yang nyolong jalur. Token ini ampuh karena situs jahat bisa bikin browser **ngirim** _cookie_, tapi ga bisa **baca** isi _cookie_ `csrftoken` punya situsku, jadi ga bisa naruh nilainya di _header_ `X-CSRFToken`.
 - **Kenapa _Test_ dengan `force_authenticate` Ga Cukup:**  
-  Karena `force_authenticate` itu cara instan buat nembak _endpoint_ di _unit test_ DRF dengan cara **_by-pass_ (ngelewatin)** proses autentikasi normal dan mekanisme pengecekan _cookie_ session/CSRF. Jadi, meskipun _test_ kamu lolos pakai `force_authenticate`, itu _gak ngetes sama sekali_ apakah sistem perlindungan CSRF bener-bener aktif menangkal _request_ ilegal dari luar. Buat ngetes CSRF, biasanya kita harus pake `APIClient` biasa tanpa _force_ atau manggil _endpoint_ dengan _cookie_ session beneran.
+  Karena `force_authenticate` itu cara instan buat nembak _endpoint_ di _unit test_ DRF dengan cara **_by-pass_ (ngelewatin)** proses autentikasi normal dan mekanisme pengecekan _cookie_ session/CSRF. Jadi, meskipun _test_ kamu lolos pakai `force_authenticate`, itu _gak ngetes sama sekali_ apakah sistem perlindungan CSRF bener-bener aktif menangkal _request_ ilegal dari luar. Bahkan `APIClient` biasa juga ngelewatin pengecekan CSRF secara bawaan, walaupun udah pakai `.login()`. Buat ngetes CSRF beneran, harus pakai **`APIClient(enforce_csrf_checks=True)`** plus **`.login()`** biar ada _session_ asli. Di proyekku ini ada di `test_session_write_without_csrf_is_rejected` (tanpa token → 403) dan `test_session_write_with_csrf_succeeds` (dengan token → berhasil).
 
 ---
 
