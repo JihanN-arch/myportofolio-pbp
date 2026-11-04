@@ -92,7 +92,7 @@ def experience_list(request):
 
 @api_view(["GET", "HEAD", "PUT", "PATCH", "DELETE"])
 @authentication_classes([SessionAuthentication])
-@permission_classes([IsPortofolioOwnerOrReadOnly])
+@permission_classes([IsPortofolioOwenerOrEditorOrReadOnly])
 def experience_detail(request, experience_id):
     experience = get_object_or_404(Experience.objects.prefetch_related("starred_by"), pk=experience_id,)
     
